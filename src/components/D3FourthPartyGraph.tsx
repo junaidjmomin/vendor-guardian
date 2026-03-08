@@ -70,7 +70,7 @@ export function FourthPartyGraph({ vendorName, className }: FourthPartyGraphProp
     }));
 
     // Deep copy links for d3 mutation
-    const linksData = defaultLinks.map((l) => ({ ...l } as any);
+    const linksData = defaultLinks.map((l) => ({ ...l })) as any[];
 
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
