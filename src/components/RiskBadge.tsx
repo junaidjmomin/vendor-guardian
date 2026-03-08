@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { type RiskBand, getRiskBandColor, getRiskBandBg, getRiskBandLabel } from "@/data/mockData";
+import { type RiskBand, getRiskBandColor, getRiskBandBg, getRiskBandLabel } from "@/data/types";
 
 interface RiskBadgeProps {
   band: RiskBand;

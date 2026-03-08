@@ -1,6 +1,7 @@
 import { Shield, CheckCircle, AlertCircle, XCircle, ExternalLink } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { complianceData } from "@/data/mockData";
+import { complianceData as mockComplianceData } from "@/data/mockData";
+import { useCompliance } from "@/hooks/api/useCompliance";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { StaggerContainer } from "@/components/motion/StaggerContainer";
 import { StaggerItem } from "@/components/motion/StaggerItem";
@@ -13,6 +14,9 @@ const statusConfig = {
 };
 
 export default function CompliancePage() {
+  const { data: apiCompliance } = useCompliance();
+  const complianceData = apiCompliance ?? mockComplianceData;
+
   return (
     <PageTransition className="space-y-6 p-5 lg:p-8 max-w-[1600px] mx-auto">
       {/* Header */}

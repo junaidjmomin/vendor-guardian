@@ -1,6 +1,10 @@
 import { ArrowDown, Building2, AlertTriangle, Eye, TrendingDown, Shield, Grid3X3, Activity, Layers, Sparkles, ArrowUpRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { vendors, alerts, riskTrendData, complianceData } from "@/data/mockData";
+import { vendors as mockVendors, alerts as mockAlerts, riskTrendData as mockTrendData, complianceData as mockComplianceData } from "@/data/mockData";
+import { useVendors } from "@/hooks/api/useVendors";
+import { useAlerts } from "@/hooks/api/useAlerts";
+import { useRiskTrends } from "@/hooks/api/useRiskTrends";
+import { useCompliance } from "@/hooks/api/useCompliance";
 import { RiskBadge } from "@/components/RiskBadge";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { CertInClock } from "@/components/CertInClock";
@@ -32,13 +36,25 @@ function SectionCard({ icon: Icon, title, iconBg = "bg-primary/8", iconColor = "
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { data: apiVendors } = useVendors();
+  const { data: apiAlerts } = useAlerts();
+  const { data: apiTrends } = useRiskTrends();
+  const { data: apiCompliance } = useCompliance();
+
+  // Use API data if available, fallback to mock
+  const vendors = apiVendors ?? mockVendors;
+  const alerts = apiAlerts ?? mockAlerts;
+  const riskTrendData = apiTrends ?? mockTrendData;
+  const complianceData = apiCompliance ?? mockComplianceData;
+
   const criticalVendors = vendors.filter((v) => v.riskBand === "critical");
   const highVendors = vendors.filter((v) => v.riskBand === "high");
   const watchVendors = vendors.filter((v) => v.riskBand === "watch");
   const stableVendors = vendors.filter((v) => v.riskBand === "stable");
   const activeClocks = vendors.filter((v) => v.certInClock?.active);
   const newAlerts = alerts.filter((a) => a.status === "new").length;
-  const aggregateScore = Math.round(vendors.reduce((a, v) => a + v.compositeScore, 0) / vendors.length);
+
+  const aggregateScore = vendors.length > 0 ? Math.round(vendors.reduce((a, v) => a + v.compositeScore, 0) / vendors.length) : 0;
 
   const riskCounts = [
     { label: "Critical", count: criticalVendors.length, colorClass: "text-risk-critical-foreground", bgClass: "bg-risk-critical-foreground/8", borderClass: "border-risk-critical-foreground/10", dotClass: "bg-risk-critical-foreground" },

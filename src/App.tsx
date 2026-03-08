@@ -7,7 +7,9 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { AnimatePresence } from "framer-motion";
 import { Search, Bell, User, Command } from "lucide-react";
+import { useRealtimeUpdates } from "./hooks/useRealtimeUpdates";
 import LandingPage from "./pages/LandingPage";
+import LoginPage from "./pages/LoginPage";
 import Dashboard from "./pages/Dashboard";
 import VendorRegistry from "./pages/VendorRegistry";
 import VendorDetail from "./pages/VendorDetail";
@@ -111,10 +113,27 @@ function AppShell() {
   );
 }
 
+function RealtimeProvider({ children }: { children: React.ReactNode }) {
+  useRealtimeUpdates();
+  return <>{children}</>;
+}
+
 function RootRouter() {
   const location = useLocation();
-  if (location.pathname === "/") return <LandingPage />;
-  return <AppShell />;
+
+  if (location.pathname === "/") {
+    return <LandingPage />;
+  }
+
+  if (location.pathname === "/login") {
+    return <LoginPage />;
+  }
+
+  return (
+    <RealtimeProvider>
+      <AppShell />
+    </RealtimeProvider>
+  );
 }
 
 const App = () => (

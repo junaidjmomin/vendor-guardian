@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Bell, Clock, History, Filter, Zap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { alerts, type RiskBand } from "@/data/mockData";
+import { alerts as mockAlerts } from "@/data/mockData";
+import { type RiskBand } from "@/data/types";
+import { useAlerts } from "@/hooks/api/useAlerts";
 import { RiskBadge } from "@/components/RiskBadge";
 import { AlertTimeline } from "@/components/D3AlertTimeline";
 import { PageTransition } from "@/components/motion/PageTransition";
@@ -13,6 +15,9 @@ export default function AlertsPage() {
   const navigate = useNavigate();
   const [filterSeverity, setFilterSeverity] = useState<RiskBand | "all">("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+
+  const { data: apiAlerts } = useAlerts();
+  const alerts = apiAlerts ?? mockAlerts;
 
   const filtered = alerts.filter((a) => {
     if (filterSeverity !== "all" && a.severity !== filterSeverity) return false;

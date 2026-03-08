@@ -1,7 +1,9 @@
 import { useState, useCallback } from "react";
 import { GitBranch, Clock, User, FileText, GripVertical, Plus, MoreHorizontal, AlertTriangle, Zap } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { workflowItems, type WorkflowItem } from "@/data/mockData";
+import { workflowItems as mockWorkflows } from "@/data/mockData";
+import { type WorkflowItem } from "@/data/types";
+import { useWorkflows } from "@/hooks/api/useWorkflows";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { StaggerContainer } from "@/components/motion/StaggerContainer";
 import { StaggerItem } from "@/components/motion/StaggerItem";
@@ -105,6 +107,8 @@ function KanbanCard({ item, colKey, onDragStart, onNavigate }: KanbanCardProps) 
 
 export default function WorkflowsPage() {
   const navigate = useNavigate();
+  const { data: apiWorkflows } = useWorkflows();
+  const workflowItems = apiWorkflows ?? mockWorkflows;
   const [items, setItems] = useState<WorkflowItem[]>(() => [...workflowItems]);
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [dragOverCol, setDragOverCol] = useState<ColumnKey | null>(null);

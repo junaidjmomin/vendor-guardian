@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
 import { alerts } from "@/data/mockData";
+// TODO: Accept alerts as prop from parent (which uses useAlerts hook)
 
 interface TimelineProps {
   className?: string;

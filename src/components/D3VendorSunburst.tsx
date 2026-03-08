@@ -1,6 +1,8 @@
 import { useRef, useEffect, useState } from "react";
 import * as d3 from "d3";
-import { vendors, dimensionLabels } from "@/data/mockData";
+import { vendors } from "@/data/mockData";
+import { dimensionLabels } from "@/data/types";
+// TODO: Accept vendors as prop from parent (which uses useVendors hook)
 
 interface SunburstProps {
   className?: string;

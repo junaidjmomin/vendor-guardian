@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Search, Building2, ArrowUpDown, PieChart, ChevronRight, Filter } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { vendors, type RiskBand } from "@/data/mockData";
+import { vendors as mockVendors } from "@/data/mockData";
+import { type RiskBand } from "@/data/types";
+import { useVendors } from "@/hooks/api/useVendors";
 import { RiskBadge } from "@/components/RiskBadge";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { VendorSunburst } from "@/components/D3VendorSunburst";
@@ -16,6 +18,9 @@ export default function VendorRegistry() {
   const [search, setSearch] = useState("");
   const [filterBand, setFilterBand] = useState<RiskBand | "all">("all");
   const [sortBy, setSortBy] = useState<"score" | "name" | "change">("score");
+
+  const { data: apiVendors } = useVendors();
+  const vendors = apiVendors ?? mockVendors;
 
   const filtered = vendors
     .filter((v) => {

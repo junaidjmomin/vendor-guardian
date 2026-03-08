@@ -1,7 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, AlertTriangle, Calendar, Shield, Share2, ChevronRight, ExternalLink, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { vendors, alerts, workflowItems, dimensionLabels } from "@/data/mockData";
+import { vendors as mockVendors, alerts as mockAlerts, workflowItems as mockWorkflows } from "@/data/mockData";
+import { dimensionLabels } from "@/data/types";
+import { useVendor } from "@/hooks/api/useVendors";
+import { useAlerts } from "@/hooks/api/useAlerts";
+import { useWorkflows } from "@/hooks/api/useWorkflows";
 import { RiskBadge } from "@/components/RiskBadge";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { CertInClock } from "@/components/CertInClock";
@@ -14,7 +18,13 @@ import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Pola
 export default function VendorDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const vendor = vendors.find((v) => v.id === id);
+
+  const { data: apiVendor } = useVendor(id ?? "");
+  const { data: apiAlerts } = useAlerts({ vendor_id: id });
+  const { data: apiWorkflows } = useWorkflows();
+
+  // Fallback to mock data if API unavailable
+  const vendor = apiVendor ?? mockVendors.find((v) => v.id === id);
 
   if (!vendor) {
     return (
@@ -27,8 +37,8 @@ export default function VendorDetail() {
     );
   }
 
-  const vendorAlerts = alerts.filter((a) => a.vendorId === vendor.id);
-  const vendorWorkflows = workflowItems.filter((w) => w.vendorId === vendor.id);
+  const vendorAlerts = (apiAlerts ?? mockAlerts).filter((a) => a.vendorId === vendor.id);
+  const vendorWorkflows = (apiWorkflows ?? mockWorkflows).filter((w) => w.vendorId === vendor.id);
 
   const radarData = Object.entries(vendor.dimensions).map(([key, value]) => ({
     dimension: dimensionLabels[key]?.split(" ").slice(0, 2).join(" ") || key,
