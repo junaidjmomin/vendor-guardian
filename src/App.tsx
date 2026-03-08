@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { AnimatePresence } from "framer-motion";
-import { Search, Bell, User } from "lucide-react";
+import { Search, Bell, User, Command } from "lucide-react";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import VendorRegistry from "./pages/VendorRegistry";
@@ -58,39 +58,36 @@ function TopBar() {
   const title = pageTitles[basePath] || "";
 
   return (
-    <header className="h-14 flex items-center border-b border-border/40 bg-background/60 backdrop-blur-xl sticky top-0 z-10">
+    <header className="h-14 flex items-center border-b border-border/20 bg-background/70 backdrop-blur-2xl sticky top-0 z-10">
       <SidebarTrigger className="ml-3" />
       
       {title && (
         <div className="ml-4 hidden sm:flex items-center gap-2">
-          <span className="text-[11px] text-muted-foreground font-display">/</span>
-          <span className="text-sm font-display font-medium text-foreground">{title}</span>
+          <span className="text-muted-foreground/30 font-body text-xs">/</span>
+          <span className="text-[13px] font-display font-semibold text-foreground">{title}</span>
         </div>
       )}
 
-      <div className="ml-auto mr-4 flex items-center gap-1.5">
+      <div className="ml-auto mr-4 flex items-center gap-1">
         {/* Search */}
-        <button className="h-9 w-9 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all">
-          <Search className="h-4 w-4" />
+        <button className="h-8 px-3 rounded-xl flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-secondary/30 transition-all text-xs font-body">
+          <Search className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Search</span>
+          <kbd className="hidden sm:inline-flex h-5 items-center gap-0.5 rounded-md bg-secondary/50 px-1.5 font-mono text-[9px] text-muted-foreground/50">
+            <Command className="h-2.5 w-2.5" />K
+          </kbd>
         </button>
 
         {/* Notifications */}
-        <button className="relative h-9 w-9 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all">
-          <Bell className="h-4 w-4" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-risk-high animate-pulse" />
+        <button className="relative h-8 w-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary/30 transition-all">
+          <Bell className="h-3.5 w-3.5" />
+          <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-risk-high ring-2 ring-background" />
         </button>
 
-        {/* Divider */}
-        <div className="h-6 w-px bg-border/50 mx-1.5" />
+        <div className="h-5 w-px bg-border/20 mx-1" />
 
-        {/* System status */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-risk-stable/5 border border-risk-stable/15">
-          <div className="h-1.5 w-1.5 rounded-full bg-risk-stable animate-pulse" />
-          <span className="text-[10px] text-risk-stable font-mono font-medium tracking-wide">LIVE</span>
-        </div>
-
-        {/* User avatar */}
-        <button className="h-8 w-8 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20 flex items-center justify-center ml-1 hover:border-primary/40 transition-all">
+        {/* User */}
+        <button className="h-8 w-8 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/10 flex items-center justify-center hover:border-primary/20 transition-all">
           <User className="h-3.5 w-3.5 text-primary" />
         </button>
       </div>
@@ -116,12 +113,7 @@ function AppShell() {
 
 function RootRouter() {
   const location = useLocation();
-  const isLanding = location.pathname === "/";
-
-  if (isLanding) {
-    return <LandingPage />;
-  }
-
+  if (location.pathname === "/") return <LandingPage />;
   return <AppShell />;
 }
 
