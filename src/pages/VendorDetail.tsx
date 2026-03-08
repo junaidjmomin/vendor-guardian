@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, AlertTriangle, Calendar, Shield, FileText, Share2 } from "lucide-react";
+import { ArrowLeft, AlertTriangle, Calendar, Shield, Share2, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { vendors, alerts, workflowItems, dimensionLabels } from "@/data/mockData";
 import { RiskBadge } from "@/components/RiskBadge";
@@ -19,7 +19,11 @@ export default function VendorDetail() {
   if (!vendor) {
     return (
       <div className="flex h-full items-center justify-center p-6">
-        <p className="text-muted-foreground">Vendor not found.</p>
+        <div className="text-center">
+          <p className="font-display text-lg font-semibold text-foreground">Vendor not found</p>
+          <p className="text-sm text-muted-foreground mt-1">The vendor you're looking for doesn't exist.</p>
+          <button onClick={() => navigate("/vendors")} className="mt-4 text-sm text-primary hover:underline font-display">← Back to Registry</button>
+        </div>
       </div>
     );
   }
@@ -34,46 +38,54 @@ export default function VendorDetail() {
   }));
 
   return (
-    <PageTransition className="space-y-4 p-4 lg:p-6">
-      <button onClick={() => navigate("/vendors")} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
-        <ArrowLeft className="h-3.5 w-3.5" /> Back to Registry
+    <PageTransition className="space-y-6 p-5 lg:p-8 max-w-[1600px] mx-auto">
+      {/* Back */}
+      <button onClick={() => navigate("/vendors")} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors font-display group">
+        <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" /> Back to Registry
       </button>
 
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-foreground">{vendor.name}</h1>
+            <h1 className="font-display text-2xl font-bold text-foreground">{vendor.name}</h1>
             <RiskBadge band={vendor.riskBand} size="md" />
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">{vendor.category} • {vendor.tier} outsourcing</p>
-          <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Contract: {vendor.contractExpiry}</span>
-            <span className="flex items-center gap-1"><Shield className="h-3 w-3" /> Last assessed: {vendor.lastAssessed}</span>
+          <p className="mt-1.5 text-sm text-muted-foreground font-display">{vendor.category} • <span className="capitalize">{vendor.tier}</span> outsourcing</p>
+          <div className="mt-3 flex items-center gap-5 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1.5"><Calendar className="h-3 w-3" /> Contract: {vendor.contractExpiry}</span>
+            <span className="flex items-center gap-1.5"><Shield className="h-3 w-3" /> Last assessed: {vendor.lastAssessed}</span>
           </div>
         </div>
         <ScoreGauge score={vendor.compositeScore} previousScore={vendor.previousScore} size="lg" />
       </div>
 
+      {/* CERT-In */}
       {vendor.certInClock?.active && (
         <StaggerItem>
           <CertInClock vendorName={vendor.name} remaining={vendor.certInClock.remaining} />
         </StaggerItem>
       )}
 
-      <StaggerContainer className="grid gap-4 lg:grid-cols-2">
+      {/* Radar + Dimension Scores */}
+      <StaggerContainer className="grid gap-5 lg:grid-cols-2">
         <StaggerItem>
-          <Card className="border-border bg-card h-full">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-mono tracking-wider">9-DIMENSION RISK PROFILE</CardTitle>
+          <Card className="border-border/60 bg-card/80 backdrop-blur-sm h-full rounded-2xl">
+            <CardHeader className="pb-3 pt-5 px-6">
+              <CardTitle className="flex items-center gap-2.5 text-sm font-display font-semibold tracking-tight">
+                <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Shield className="h-3.5 w-3.5 text-primary" />
+                </div>
+                9-Dimension Risk Profile
+              </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               <ResponsiveContainer width="100%" height={300}>
                 <RadarChart data={radarData}>
-                  <PolarGrid stroke="hsl(220, 15%, 18%)" />
-                  <PolarAngleAxis dataKey="dimension" tick={{ fontSize: 9, fill: "hsl(215, 15%, 55%)" }} />
-                  <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 8, fill: "hsl(215, 15%, 55%)" }} />
-                  <Radar name="Score" dataKey="score" stroke="hsl(190, 90%, 50%)" fill="hsl(190, 90%, 50%)" fillOpacity={0.2} strokeWidth={2} />
+                  <PolarGrid stroke="hsl(225, 15%, 14%)" />
+                  <PolarAngleAxis dataKey="dimension" tick={{ fontSize: 9, fill: "hsl(215, 15%, 50%)" }} />
+                  <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 8, fill: "hsl(215, 15%, 50%)" }} />
+                  <Radar name="Score" dataKey="score" stroke="hsl(185, 85%, 50%)" fill="hsl(185, 85%, 50%)" fillOpacity={0.15} strokeWidth={2} />
                 </RadarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -81,20 +93,20 @@ export default function VendorDetail() {
         </StaggerItem>
 
         <StaggerItem>
-          <Card className="border-border bg-card h-full">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-mono tracking-wider">CATEGORY SCORES</CardTitle>
+          <Card className="border-border/60 bg-card/80 backdrop-blur-sm h-full rounded-2xl">
+            <CardHeader className="pb-3 pt-5 px-6">
+              <CardTitle className="text-sm font-display font-semibold tracking-tight">Category Scores</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3 px-6 pb-6">
               {Object.entries(vendor.dimensions).map(([key, value]) => (
-                <div key={key} className="space-y-1">
+                <div key={key} className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">{dimensionLabels[key]}</span>
+                    <span className="text-xs text-muted-foreground font-display">{dimensionLabels[key]}</span>
                     <span className={`font-mono text-xs font-bold ${value <= 24 ? "text-risk-critical-foreground" : value <= 49 ? "text-risk-high" : value <= 74 ? "text-risk-watch" : "text-risk-stable"}`}>
                       {value}
                     </span>
                   </div>
-                  <div className="h-1.5 rounded-full bg-secondary">
+                  <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-700"
                       style={{
@@ -110,32 +122,40 @@ export default function VendorDetail() {
         </StaggerItem>
       </StaggerContainer>
 
+      {/* Fourth-Party Graph */}
       <StaggerItem>
-        <Card className="border-border bg-card">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
-              <Share2 className="h-4 w-4 text-primary" /> FOURTH-PARTY DEPENDENCY MAP
+        <Card className="border-border/60 bg-card/80 backdrop-blur-sm rounded-2xl">
+          <CardHeader className="pb-3 pt-5 px-6">
+            <CardTitle className="flex items-center gap-2.5 text-sm font-display font-semibold tracking-tight">
+              <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Share2 className="h-3.5 w-3.5 text-primary" />
+              </div>
+              Fourth-Party Dependency Map
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 pb-4">
             <FourthPartyGraph vendorName={vendor.name} />
           </CardContent>
         </Card>
       </StaggerItem>
 
+      {/* Active Triggers */}
       {vendor.triggers.length > 0 && (
         <StaggerItem>
-          <Card className="border-border bg-card">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
-                <AlertTriangle className="h-4 w-4 text-risk-high" /> ACTIVE TRIGGERS
+          <Card className="border-border/60 bg-card/80 backdrop-blur-sm rounded-2xl">
+            <CardHeader className="pb-3 pt-5 px-6">
+              <CardTitle className="flex items-center gap-2.5 text-sm font-display font-semibold tracking-tight">
+                <div className="h-7 w-7 rounded-lg bg-risk-high/10 flex items-center justify-center">
+                  <AlertTriangle className="h-3.5 w-3.5 text-risk-high" />
+                </div>
+                Active Triggers
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-6 pb-6">
               <div className="space-y-2">
                 {vendor.triggers.map((trigger, i) => (
-                  <div key={i} className="flex items-center gap-2 rounded border border-risk-high/20 bg-risk-high/5 px-3 py-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-risk-high" />
+                  <div key={i} className="flex items-center gap-3 rounded-xl border border-risk-high/15 bg-risk-high/5 px-4 py-3">
+                    <span className="h-2 w-2 rounded-full bg-risk-high flex-shrink-0" />
                     <span className="text-xs text-foreground">{trigger}</span>
                   </div>
                 ))}
@@ -145,24 +165,27 @@ export default function VendorDetail() {
         </StaggerItem>
       )}
 
-      <StaggerContainer className="grid gap-4 lg:grid-cols-2">
+      {/* Alerts + Workflows */}
+      <StaggerContainer className="grid gap-5 lg:grid-cols-2">
         <StaggerItem>
-          <Card className="border-border bg-card h-full">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-mono tracking-wider">ALERTS ({vendorAlerts.length})</CardTitle>
+          <Card className="border-border/60 bg-card/80 backdrop-blur-sm h-full rounded-2xl">
+            <CardHeader className="pb-3 pt-5 px-6">
+              <CardTitle className="text-sm font-display font-semibold tracking-tight">
+                Alerts <span className="text-muted-foreground font-normal">({vendorAlerts.length})</span>
+              </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-6 pb-6">
               {vendorAlerts.length === 0 ? (
-                <p className="text-xs text-muted-foreground">No active alerts.</p>
+                <p className="text-xs text-muted-foreground py-4 text-center">No active alerts.</p>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {vendorAlerts.map((alert) => (
-                    <div key={alert.id} className="rounded border border-border p-2">
+                    <div key={alert.id} className="rounded-xl border border-border/50 p-3.5 hover:bg-secondary/20 transition-colors">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-foreground">{alert.title}</span>
+                        <span className="text-xs font-display font-medium text-foreground">{alert.title}</span>
                         <RiskBadge band={alert.severity} />
                       </div>
-                      <p className="mt-1 text-[10px] text-muted-foreground">{alert.dimension} • {alert.status}</p>
+                      <p className="mt-1.5 text-[10px] text-muted-foreground">{alert.dimension} • {alert.status}</p>
                     </div>
                   ))}
                 </div>
@@ -172,20 +195,22 @@ export default function VendorDetail() {
         </StaggerItem>
 
         <StaggerItem>
-          <Card className="border-border bg-card h-full">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-mono tracking-wider">WORKFLOWS ({vendorWorkflows.length})</CardTitle>
+          <Card className="border-border/60 bg-card/80 backdrop-blur-sm h-full rounded-2xl">
+            <CardHeader className="pb-3 pt-5 px-6">
+              <CardTitle className="text-sm font-display font-semibold tracking-tight">
+                Workflows <span className="text-muted-foreground font-normal">({vendorWorkflows.length})</span>
+              </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-6 pb-6">
               {vendorWorkflows.length === 0 ? (
-                <p className="text-xs text-muted-foreground">No active workflows.</p>
+                <p className="text-xs text-muted-foreground py-4 text-center">No active workflows.</p>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {vendorWorkflows.map((w) => (
-                    <div key={w.id} className="rounded border border-border p-2">
-                      <p className="text-xs font-medium text-foreground">{w.title}</p>
-                      <div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
-                        <span className={`rounded px-1 py-0.5 font-mono ${w.status === "open" ? "bg-risk-watch/10 text-risk-watch" : w.status === "in_progress" ? "bg-primary/10 text-primary" : "bg-secondary text-secondary-foreground"}`}>
+                    <div key={w.id} className="rounded-xl border border-border/50 p-3.5">
+                      <p className="text-xs font-display font-medium text-foreground">{w.title}</p>
+                      <div className="mt-2 flex items-center gap-2.5 text-[10px] text-muted-foreground flex-wrap">
+                        <span className={`rounded-md px-1.5 py-0.5 font-mono font-medium ${w.status === "open" ? "bg-risk-watch/10 text-risk-watch" : w.status === "in_progress" ? "bg-primary/10 text-primary" : "bg-secondary text-secondary-foreground"}`}>
                           {w.status.replace("_", " ")}
                         </span>
                         <span>→ {w.assignedTo}</span>

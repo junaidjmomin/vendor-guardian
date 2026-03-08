@@ -12,18 +12,20 @@ export function CertInClock({ vendorName, remaining, className }: CertInClockPro
   const isUrgent = hours < 1;
 
   return (
-    <div className={`rounded-lg border border-risk-high/30 bg-risk-high/5 p-3 ${className}`}>
-      <div className="flex items-center gap-2">
-        <AlertTriangle className={`h-4 w-4 text-risk-high ${isUrgent ? "risk-pulse" : ""}`} />
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-risk-high">
+    <div className={`rounded-2xl border border-risk-high/20 bg-risk-high/5 p-4 backdrop-blur-sm ${className}`}>
+      <div className="flex items-center gap-2.5">
+        <div className="h-7 w-7 rounded-lg bg-risk-high/10 flex items-center justify-center">
+          <AlertTriangle className={`h-3.5 w-3.5 text-risk-high ${isUrgent ? "risk-pulse" : ""}`} />
+        </div>
+        <span className="text-[10px] font-display font-semibold uppercase tracking-widest text-risk-high">
           CERT-In 6-Hour Clock Active
         </span>
       </div>
-      <div className="mt-2 flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">{vendorName}</span>
-        <div className="flex items-center gap-1.5">
+      <div className="mt-3 flex items-center justify-between">
+        <span className="text-xs text-muted-foreground font-display">{vendorName}</span>
+        <div className="flex items-center gap-2">
           <Clock className="h-3.5 w-3.5 text-risk-high" />
-          <span className={`font-mono text-lg font-bold ${isUrgent ? "text-risk-critical-foreground risk-pulse" : "text-risk-high"}`}>
+          <span className={`font-mono text-xl font-bold ${isUrgent ? "text-risk-critical-foreground risk-pulse" : "text-risk-high"}`}>
             {remaining}
           </span>
         </div>

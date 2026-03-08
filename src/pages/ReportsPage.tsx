@@ -15,37 +15,43 @@ const reports = [
 
 export default function ReportsPage() {
   return (
-    <PageTransition className="space-y-4 p-4 lg:p-6">
-      <div className="flex items-center gap-2">
-        <FileText className="h-5 w-5 text-primary" />
-        <h1 className="font-mono text-lg font-bold tracking-wider text-primary">REPORT CENTER</h1>
+    <PageTransition className="space-y-6 p-5 lg:p-8 max-w-[1600px] mx-auto">
+      {/* Header */}
+      <div>
+        <div className="flex items-center gap-2.5">
+          <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <FileText className="h-4 w-4 text-primary" />
+          </div>
+          <h1 className="font-display text-xl font-bold tracking-tight text-foreground">Report Center</h1>
+        </div>
+        <p className="text-xs text-muted-foreground mt-1.5 ml-[42px]">Machine-generated, human-verified regulatory reports. One-click RBI-ready exports.</p>
       </div>
-      <p className="text-xs text-muted-foreground">Machine-generated, human-verified regulatory reports. One-click RBI-ready exports.</p>
 
-      <StaggerContainer className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      {/* Report Cards */}
+      <StaggerContainer className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {reports.map((report) => {
           const Icon = report.icon;
           return (
             <StaggerItem key={report.id}>
-              <Card className="border-border bg-card hover:border-primary/20 transition-colors h-full">
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="rounded-md bg-secondary p-2">
-                      <Icon className="h-4 w-4 text-primary" />
+              <Card className="border-border/60 bg-card/80 backdrop-blur-sm hover:border-primary/20 transition-all duration-300 h-full rounded-2xl group">
+                <CardContent className="p-5">
+                  <div className="flex items-start gap-4">
+                    <div className="rounded-xl bg-secondary/50 p-2.5 group-hover:bg-primary/10 transition-colors">
+                      <Icon className="h-5 w-5 text-primary" />
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-sm font-semibold text-foreground">{report.title}</h3>
-                      <p className="mt-0.5 text-[10px] text-muted-foreground">{report.type} • {report.regulation}</p>
-                      <div className="mt-3 flex items-center justify-between">
-                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                          <Calendar className="h-2.5 w-2.5" /> {report.date}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-display font-semibold text-foreground group-hover:text-primary transition-colors">{report.title}</h3>
+                      <p className="mt-1 text-[11px] text-muted-foreground">{report.type} • {report.regulation}</p>
+                      <div className="mt-4 flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                          <Calendar className="h-3 w-3" /> {report.date}
                         </div>
                         {report.status === "ready" ? (
-                          <button className="flex items-center gap-1 rounded bg-primary/10 px-2 py-1 text-[10px] font-medium text-primary hover:bg-primary/20 transition-colors">
+                          <button className="flex items-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-[11px] font-display font-medium text-primary hover:bg-primary/20 transition-colors">
                             <Download className="h-3 w-3" /> Download
                           </button>
                         ) : (
-                          <span className="flex items-center gap-1 text-[10px] text-risk-watch">
+                          <span className="flex items-center gap-1.5 text-[11px] text-risk-watch">
                             <Clock className="h-3 w-3 animate-spin" /> Generating...
                           </span>
                         )}

@@ -1,4 +1,4 @@
-import { Settings, Users, Shield, Bell, Database, Key, Monitor } from "lucide-react";
+import { Settings, Users, Shield, Bell, Database, Key, Monitor, Server, Globe, Cpu } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { StaggerContainer } from "@/components/motion/StaggerContainer";
@@ -18,7 +18,7 @@ const integrations = [
   { name: "RSA Archer", status: "connected", icon: Shield },
   { name: "MetricStream", status: "pending", icon: Shield },
   { name: "Microsoft Teams", status: "connected", icon: Bell },
-  { name: "BitSight", status: "connected", icon: Shield },
+  { name: "BitSight", status: "connected", icon: Globe },
   { name: "SecurityScorecard", status: "pending", icon: Shield },
   { name: "Active Directory / LDAP", status: "connected", icon: Key },
   { name: "CERT-In Feeds", status: "connected", icon: Database },
@@ -26,31 +26,38 @@ const integrations = [
 
 export default function SettingsPage() {
   return (
-    <PageTransition className="space-y-4 p-4 lg:p-6">
-      <div className="flex items-center gap-2">
-        <Settings className="h-5 w-5 text-primary" />
-        <h1 className="font-mono text-lg font-bold tracking-wider text-primary">SETTINGS</h1>
+    <PageTransition className="space-y-6 p-5 lg:p-8 max-w-[1600px] mx-auto">
+      {/* Header */}
+      <div className="flex items-center gap-2.5">
+        <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+          <Settings className="h-4 w-4 text-primary" />
+        </div>
+        <h1 className="font-display text-xl font-bold tracking-tight text-foreground">Settings</h1>
       </div>
 
-      <StaggerContainer className="space-y-4">
+      <StaggerContainer className="space-y-5">
+        {/* RBAC */}
         <StaggerItem>
-          <Card className="border-border bg-card">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
-                <Users className="h-4 w-4 text-primary" /> ROLE-BASED ACCESS CONTROL
+          <Card className="border-border/60 bg-card/80 backdrop-blur-sm rounded-2xl">
+            <CardHeader className="pb-3 pt-5 px-6">
+              <CardTitle className="flex items-center gap-2.5 text-sm font-display font-semibold tracking-tight">
+                <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Users className="h-3.5 w-3.5 text-primary" />
+                </div>
+                Role-Based Access Control
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="divide-y divide-border">
+            <CardContent className="px-6 pb-6">
+              <div className="divide-y divide-border/40">
                 {roles.map((r) => (
-                  <div key={r.role} className="flex items-center justify-between py-3">
+                  <div key={r.role} className="flex items-center justify-between py-4 first:pt-0 last:pb-0">
                     <div>
-                      <p className="text-sm font-medium text-foreground">{r.role}</p>
-                      <p className="text-[10px] text-muted-foreground">{r.permissions}</p>
+                      <p className="text-sm font-display font-medium text-foreground">{r.role}</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">{r.permissions}</p>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right flex items-center gap-2">
                       <span className="font-mono text-sm font-bold text-foreground">{r.users}</span>
-                      <p className="text-[10px] text-muted-foreground">users</p>
+                      <span className="text-[10px] text-muted-foreground">users</span>
                     </div>
                   </div>
                 ))}
@@ -59,23 +66,29 @@ export default function SettingsPage() {
           </Card>
         </StaggerItem>
 
+        {/* Integrations */}
         <StaggerItem>
-          <Card className="border-border bg-card">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
-                <Database className="h-4 w-4 text-primary" /> INTEGRATIONS
+          <Card className="border-border/60 bg-card/80 backdrop-blur-sm rounded-2xl">
+            <CardHeader className="pb-3 pt-5 px-6">
+              <CardTitle className="flex items-center gap-2.5 text-sm font-display font-semibold tracking-tight">
+                <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Database className="h-3.5 w-3.5 text-primary" />
+                </div>
+                Integrations
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            <CardContent className="px-6 pb-6">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {integrations.map((int) => {
                   const Icon = int.icon;
                   return (
-                    <div key={int.name} className="flex items-center gap-3 rounded border border-border p-3">
-                      <Icon className="h-4 w-4 text-muted-foreground" />
-                      <div className="flex-1">
-                        <p className="text-xs font-medium text-foreground">{int.name}</p>
-                        <span className={`text-[10px] font-medium ${int.status === "connected" ? "text-risk-stable" : "text-risk-watch"}`}>
+                    <div key={int.name} className="flex items-center gap-3 rounded-xl border border-border/50 p-3.5 hover:bg-secondary/20 transition-colors group">
+                      <div className="h-9 w-9 rounded-lg bg-secondary/50 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                        <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-display font-medium text-foreground truncate">{int.name}</p>
+                        <span className={`text-[10px] font-display font-medium ${int.status === "connected" ? "text-risk-stable" : "text-risk-watch"}`}>
                           {int.status}
                         </span>
                       </div>
@@ -87,26 +100,38 @@ export default function SettingsPage() {
           </Card>
         </StaggerItem>
 
+        {/* System Info */}
         <StaggerItem>
-          <Card className="border-border bg-card">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-mono tracking-wider">SYSTEM INFORMATION</CardTitle>
+          <Card className="border-border/60 bg-card/80 backdrop-blur-sm rounded-2xl">
+            <CardHeader className="pb-3 pt-5 px-6">
+              <CardTitle className="flex items-center gap-2.5 text-sm font-display font-semibold tracking-tight">
+                <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Cpu className="h-3.5 w-3.5 text-primary" />
+                </div>
+                System Information
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid gap-3 sm:grid-cols-3 text-xs">
+            <CardContent className="px-6 pb-6">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {[
-                  { label: "Deployment", value: "AWS ap-south-1 (Mumbai)" },
-                  { label: "AI Engine", value: "LLM + ML + Rule Engine" },
-                  { label: "Data Residency", value: "India (RBI Compliant)" },
-                  { label: "Encryption", value: "AES-256 / TLS 1.3" },
-                  { label: "Audit Logs", value: "Immutable, append-only" },
-                  { label: "Version", value: "v1.0.0-alpha" },
-                ].map((info) => (
-                  <div key={info.label} className="rounded bg-secondary/50 p-2">
-                    <p className="text-[10px] text-muted-foreground">{info.label}</p>
-                    <p className="font-medium text-foreground">{info.value}</p>
-                  </div>
-                ))}
+                  { label: "Deployment", value: "AWS ap-south-1 (Mumbai)", icon: Server },
+                  { label: "AI Engine", value: "LLM + ML + Rule Engine", icon: Cpu },
+                  { label: "Data Residency", value: "India (RBI Compliant)", icon: Globe },
+                  { label: "Encryption", value: "AES-256 / TLS 1.3", icon: Shield },
+                  { label: "Audit Logs", value: "Immutable, append-only", icon: Database },
+                  { label: "Version", value: "v1.0.0-alpha", icon: Monitor },
+                ].map((info) => {
+                  const Icon = info.icon;
+                  return (
+                    <div key={info.label} className="rounded-xl bg-secondary/30 border border-border/30 p-4 flex items-start gap-3">
+                      <Icon className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-[10px] font-display text-muted-foreground uppercase tracking-wider">{info.label}</p>
+                        <p className="text-xs font-display font-medium text-foreground mt-0.5">{info.value}</p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
