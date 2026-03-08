@@ -11,10 +11,10 @@ export function RiskBadge({ band, className, size = "sm" }: RiskBadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded font-mono font-semibold uppercase tracking-wider",
+        "inline-flex items-center gap-1.5 rounded-md font-display font-semibold uppercase tracking-wider",
         getRiskBandBg(band),
         getRiskBandColor(band),
-        size === "sm" ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-1 text-xs",
+        size === "sm" ? "px-2 py-0.5 text-[10px]" : "px-2.5 py-1 text-xs",
         band === "critical" && "risk-pulse border border-risk-critical-foreground/30",
         className
       )}

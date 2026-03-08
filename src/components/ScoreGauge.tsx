@@ -34,7 +34,7 @@ export function ScoreGauge({ score, previousScore, size = "md", showDelta = true
   return (
     <div className={cn("relative inline-flex flex-col items-center", className)}>
       <svg width={dim} height={dim} className="-rotate-90">
-        <circle cx={dim / 2} cy={dim / 2} r={radius} fill="none" stroke="hsl(var(--border))" strokeWidth={strokeWidth} />
+        <circle cx={dim / 2} cy={dim / 2} r={radius} fill="none" stroke="hsl(var(--border))" strokeWidth={strokeWidth} strokeOpacity={0.5} />
         <circle
           cx={dim / 2}
           cy={dim / 2}
@@ -54,7 +54,7 @@ export function ScoreGauge({ score, previousScore, size = "md", showDelta = true
         </span>
       </div>
       {showDelta && delta !== 0 && (
-        <span className={cn("mt-1 font-mono text-[10px] font-semibold", delta > 0 ? "text-risk-stable" : "text-risk-high")}>
+        <span className={cn("mt-1.5 font-mono text-[10px] font-semibold", delta > 0 ? "text-risk-stable" : "text-risk-high")}>
           {delta > 0 ? "▲" : "▼"} {Math.abs(delta)}
         </span>
       )}

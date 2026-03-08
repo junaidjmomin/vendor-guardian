@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Filter, Building2, ArrowUpDown, PieChart } from "lucide-react";
+import { Search, Building2, ArrowUpDown, PieChart, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { vendors, type RiskBand } from "@/data/mockData";
@@ -38,76 +38,89 @@ export default function VendorRegistry() {
   ];
 
   return (
-    <PageTransition className="space-y-4 p-4 lg:p-6">
-      <div className="flex items-center gap-2">
-        <Building2 className="h-5 w-5 text-primary" />
-        <h1 className="font-mono text-lg font-bold tracking-wider text-primary">VENDOR REGISTRY</h1>
-        <span className="ml-2 rounded bg-secondary px-2 py-0.5 font-mono text-xs text-muted-foreground">{vendors.length} vendors</span>
+    <PageTransition className="space-y-6 p-5 lg:p-8 max-w-[1600px] mx-auto">
+      {/* Header */}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2.5">
+          <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <Building2 className="h-4 w-4 text-primary" />
+          </div>
+          <h1 className="font-display text-xl font-bold tracking-tight text-foreground">Vendor Registry</h1>
+          <span className="ml-1 rounded-lg bg-secondary px-2.5 py-1 font-mono text-xs text-muted-foreground">{vendors.length}</span>
+        </div>
       </div>
 
+      {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
+        <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Search vendors..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-card border-border" />
+          <Input placeholder="Search vendors..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 bg-card/80 border-border/60 rounded-xl h-10" />
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           {bands.map((band) => (
             <button
               key={band.value}
               onClick={() => setFilterBand(band.value)}
-              className={`rounded px-2.5 py-1.5 text-[11px] font-medium transition-colors ${
-                filterBand === band.value ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              className={`rounded-lg px-3 py-1.5 text-[11px] font-display font-medium transition-all ${
+                filterBand === band.value ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20" : "bg-secondary/60 text-secondary-foreground hover:bg-secondary"
               }`}
             >
               {band.label}
             </button>
           ))}
         </div>
-        <button onClick={() => setSortBy(sortBy === "score" ? "change" : sortBy === "change" ? "name" : "score")} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
+        <button onClick={() => setSortBy(sortBy === "score" ? "change" : sortBy === "change" ? "name" : "score")} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors font-display">
           <ArrowUpDown className="h-3.5 w-3.5" />
           Sort: {sortBy}
         </button>
       </div>
 
+      {/* Sunburst */}
       <StaggerItem>
-        <Card className="border-border bg-card">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
-              <PieChart className="h-4 w-4 text-primary" />
-              VENDOR CATEGORY SUNBURST
+        <Card className="border-border/60 bg-card/80 backdrop-blur-sm rounded-2xl">
+          <CardHeader className="pb-3 pt-5 px-6">
+            <CardTitle className="flex items-center gap-2.5 text-sm font-display font-semibold tracking-tight">
+              <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                <PieChart className="h-3.5 w-3.5 text-primary" />
+              </div>
+              Vendor Category Sunburst
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 pb-4">
             <VendorSunburst />
           </CardContent>
         </Card>
       </StaggerItem>
 
-      <StaggerContainer className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      {/* Vendor Cards */}
+      <StaggerContainer className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {filtered.map((vendor) => (
           <StaggerItem key={vendor.id}>
             <Card
               onClick={() => navigate(`/vendors/${vendor.id}`)}
-              className="cursor-pointer border-border bg-card hover:border-primary/30 transition-all h-full"
+              className="cursor-pointer border-border/60 bg-card/80 backdrop-blur-sm hover:border-primary/30 transition-all duration-300 h-full rounded-2xl group"
             >
-              <CardContent className="p-4">
+              <CardContent className="p-5">
                 <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold text-foreground">{vendor.name}</h3>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="text-sm font-display font-semibold text-foreground group-hover:text-primary transition-colors">{vendor.name}</h3>
                       <RiskBadge band={vendor.riskBand} />
                     </div>
-                    <p className="mt-0.5 text-[11px] text-muted-foreground">{vendor.category}</p>
-                    <div className="mt-2 flex items-center gap-3 text-[10px] text-muted-foreground">
-                      <span>Tier: <span className="text-foreground font-medium">{vendor.tier}</span></span>
+                    <p className="mt-1 text-[11px] text-muted-foreground">{vendor.category}</p>
+                    <div className="mt-3 flex items-center gap-4 text-[10px] text-muted-foreground">
+                      <span>Tier: <span className="text-foreground font-medium capitalize">{vendor.tier}</span></span>
                       <span>Contract: {vendor.contractExpiry}</span>
                     </div>
                   </div>
-                  <ScoreGauge score={vendor.compositeScore} previousScore={vendor.previousScore} size="sm" />
+                  <div className="ml-3 flex flex-col items-center">
+                    <ScoreGauge score={vendor.compositeScore} previousScore={vendor.previousScore} size="sm" />
+                  </div>
                 </div>
                 {vendor.triggers.length > 0 && (
-                  <div className="mt-3 border-t border-border pt-2">
-                    <p className="text-[10px] text-risk-high truncate">{vendor.triggers[0]}</p>
+                  <div className="mt-4 border-t border-border/40 pt-3 flex items-center justify-between">
+                    <p className="text-[10px] text-risk-high truncate flex-1 mr-2">{vendor.triggers[0]}</p>
+                    <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
                   </div>
                 )}
               </CardContent>
