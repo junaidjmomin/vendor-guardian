@@ -6,6 +6,8 @@ import { ScoreGauge } from "@/components/ScoreGauge";
 import { CertInClock } from "@/components/CertInClock";
 import { RiskOrb } from "@/components/RiskOrb";
 import { RiskHeatmap } from "@/components/D3RiskHeatmap";
+import { ConcentrationTreemap } from "@/components/D3ConcentrationTreemap";
+import { AlertTimeline } from "@/components/D3AlertTimeline";
 import { useNavigate } from "react-router-dom";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 
@@ -205,6 +207,32 @@ export default function Dashboard() {
               <Bar dataKey="watch" stackId="a" fill="hsl(38, 92%, 50%)" radius={[2, 2, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* D3 Concentration Treemap */}
+      <Card className="border-border bg-card">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
+            <Building2 className="h-4 w-4 text-risk-watch" />
+            CONCENTRATION RISK TREEMAP
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ConcentrationTreemap />
+        </CardContent>
+      </Card>
+
+      {/* D3 Alert Timeline */}
+      <Card className="border-border bg-card">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
+            <AlertTriangle className="h-4 w-4 text-risk-high" />
+            ALERT HISTORY TIMELINE
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AlertTimeline />
         </CardContent>
       </Card>
     </div>
