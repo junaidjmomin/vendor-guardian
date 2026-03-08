@@ -1,4 +1,4 @@
-import { Eye, LayoutDashboard, Building2, Bell, GitBranch, Shield, FileText, Network, Settings } from "lucide-react";
+import { LayoutDashboard, Building2, Bell, GitBranch, Shield, FileText, Network, Settings, Sparkles } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import logoIcon from "@/assets/logo-icon.png";
@@ -19,7 +19,7 @@ import {
 const mainItems = [
   { title: "Command Center", url: "/dashboard", icon: LayoutDashboard },
   { title: "Vendor Registry", url: "/vendors", icon: Building2 },
-  { title: "Alerts", url: "/alerts", icon: Bell },
+  { title: "Alerts", url: "/alerts", icon: Bell, badge: 3 },
   { title: "Workflows", url: "/workflows", icon: GitBranch },
 ];
 
@@ -33,90 +33,94 @@ const advancedItems = [
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
+function NavSection({ label, items, collapsed }: { label: string; items: typeof mainItems; collapsed: boolean }) {
+  const location = useLocation();
+  const isActive = (path: string) => location.pathname === path || (path !== "/dashboard" && location.pathname.startsWith(path));
+
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel className="text-[9px] tracking-[0.2em] text-muted-foreground/60 font-display font-semibold mb-1">{label}</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {items.map((item) => {
+            const active = isActive(item.url);
+            return (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild isActive={active}>
+                  <NavLink
+                    to={item.url}
+                    end
+                    className={`relative rounded-xl transition-all duration-200 group ${
+                      active
+                        ? "bg-primary/8 text-foreground"
+                        : "hover:bg-secondary/40 text-muted-foreground hover:text-foreground"
+                    }`}
+                    activeClassName=""
+                  >
+                    {active && (
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-primary" />
+                    )}
+                    <item.icon className={`h-[18px] w-[18px] ${active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"} transition-colors`} />
+                    {!collapsed && (
+                      <span className={`font-display text-[13px] ${active ? "font-semibold" : "font-medium"}`}>
+                        {item.title}
+                      </span>
+                    )}
+                    {!collapsed && 'badge' in item && item.badge && (
+                      <span className="ml-auto rounded-md bg-risk-high/15 px-1.5 py-0.5 text-[9px] font-mono font-bold text-risk-high">
+                        {item.badge}
+                      </span>
+                    )}
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  );
+}
+
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const location = useLocation();
-  const isActive = (path: string) => location.pathname === path;
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border/60">
+    <Sidebar collapsible="icon" className="border-r border-border/40">
       <SidebarHeader className="p-4 pb-6">
         <div className="flex items-center gap-3">
-          <img src={logoIcon} alt="Third Eye" className="h-8 w-8 rounded-lg" />
+          <div className="relative">
+            <img src={logoIcon} alt="Third Eye" className="h-9 w-9 rounded-xl" />
+            <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-risk-stable border-2 border-sidebar-background" />
+          </div>
           {!collapsed && (
             <div>
-              <h1 className="text-sm font-display font-bold text-foreground tracking-tight">Third Eye</h1>
-              <p className="text-[10px] text-muted-foreground font-display tracking-wide">Risk Intelligence</p>
+              <h1 className="text-sm font-display font-bold text-foreground tracking-tight leading-none">Third Eye</h1>
+              <p className="text-[10px] text-muted-foreground/60 font-display tracking-wider mt-0.5">RISK INTELLIGENCE</p>
             </div>
           )}
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] tracking-widest text-muted-foreground font-display">OPERATIONS</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {mainItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink to={item.url} end className="hover:bg-sidebar-accent rounded-lg transition-all" activeClassName="bg-sidebar-accent text-primary font-medium">
-                      <item.icon className="h-4 w-4" />
-                      {!collapsed && <span className="font-display text-[13px]">{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] tracking-widest text-muted-foreground font-display">REGULATORY</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {complianceItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink to={item.url} end className="hover:bg-sidebar-accent rounded-lg transition-all" activeClassName="bg-sidebar-accent text-primary font-medium">
-                      <item.icon className="h-4 w-4" />
-                      {!collapsed && <span className="font-display text-[13px]">{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-[10px] tracking-widest text-muted-foreground font-display">ADVANCED</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {advancedItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink to={item.url} end className="hover:bg-sidebar-accent rounded-lg transition-all" activeClassName="bg-sidebar-accent text-primary font-medium">
-                      <item.icon className="h-4 w-4" />
-                      {!collapsed && <span className="font-display text-[13px]">{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+      <SidebarContent className="px-2">
+        <NavSection label="OPERATIONS" items={mainItems} collapsed={collapsed} />
+        <NavSection label="REGULATORY" items={complianceItems} collapsed={collapsed} />
+        <NavSection label="ADVANCED" items={advancedItems} collapsed={collapsed} />
       </SidebarContent>
 
       <SidebarFooter className="p-3">
         {!collapsed && (
-          <div className="rounded-xl border border-border/50 bg-secondary/30 p-3 text-[10px]">
-            <div className="flex items-center gap-2">
-              <div className="h-1.5 w-1.5 rounded-full bg-risk-stable animate-pulse" />
-              <span className="text-muted-foreground font-display">System Online</span>
+          <div className="rounded-xl glass-card p-3.5">
+            <div className="flex items-center gap-2.5">
+              <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
+              </div>
+              <div>
+                <p className="text-[11px] font-display font-medium text-foreground">AI Engine Active</p>
+                <p className="text-[9px] text-muted-foreground mt-0.5">Last scan: 2 min ago</p>
+              </div>
             </div>
-            <p className="mt-1 text-muted-foreground">Last scan: 2 min ago</p>
           </div>
         )}
       </SidebarFooter>
