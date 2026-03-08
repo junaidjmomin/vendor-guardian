@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Search, Filter, Building2, ArrowUpDown } from "lucide-react";
+import { Search, Filter, Building2, ArrowUpDown, PieChart } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { vendors, type RiskBand } from "@/data/mockData";
 import { RiskBadge } from "@/components/RiskBadge";
 import { ScoreGauge } from "@/components/ScoreGauge";
+import { VendorSunburst } from "@/components/D3VendorSunburst";
 import { useNavigate } from "react-router-dom";
 
 export default function VendorRegistry() {
@@ -64,6 +65,18 @@ export default function VendorRegistry() {
           Sort: {sortBy}
         </button>
       </div>
+      {/* Sunburst Chart */}
+      <Card className="border-border bg-card">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
+            <PieChart className="h-4 w-4 text-primary" />
+            VENDOR CATEGORY SUNBURST
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <VendorSunburst />
+        </CardContent>
+      </Card>
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {filtered.map((vendor) => (
