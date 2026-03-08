@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Bell, Clock } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Bell, Clock, History } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { alerts, type RiskBand } from "@/data/mockData";
 import { RiskBadge } from "@/components/RiskBadge";
+import { AlertTimeline } from "@/components/D3AlertTimeline";
 import { useNavigate } from "react-router-dom";
 
 export default function AlertsPage() {
@@ -25,6 +26,18 @@ export default function AlertsPage() {
           {alerts.filter((a) => a.status === "new").length} new
         </span>
       </div>
+      {/* Alert Timeline */}
+      <Card className="border-border bg-card">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
+            <History className="h-4 w-4 text-primary" />
+            ALERT HISTORY TIMELINE
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <AlertTimeline />
+        </CardContent>
+      </Card>
 
       <div className="flex flex-wrap gap-2">
         {(["all", "critical", "high", "watch", "stable"] as const).map((s) => (
