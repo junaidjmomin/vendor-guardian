@@ -1,9 +1,11 @@
-import { ArrowDown, ArrowUp, Building2, AlertTriangle, Eye, TrendingDown, Shield } from "lucide-react";
+import { ArrowDown, ArrowUp, Building2, AlertTriangle, Eye, TrendingDown, Shield, Grid3X3 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { vendors, alerts, riskTrendData, complianceData } from "@/data/mockData";
 import { RiskBadge } from "@/components/RiskBadge";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { CertInClock } from "@/components/CertInClock";
+import { RiskOrb } from "@/components/RiskOrb";
+import { RiskHeatmap } from "@/components/D3RiskHeatmap";
 import { useNavigate } from "react-router-dom";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 
@@ -51,10 +53,9 @@ export default function Dashboard() {
 
       {/* Posture Summary */}
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-5">
-        <Card className="col-span-2 lg:col-span-1 border-border bg-card">
-          <CardContent className="flex flex-col items-center justify-center p-4">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Aggregate Score</span>
-            <ScoreGauge score={aggregateScore} previousScore={prevAggregateScore} size="lg" />
+        <Card className="col-span-2 lg:col-span-1 border-border bg-card overflow-hidden">
+          <CardContent className="p-0">
+            <RiskOrb score={aggregateScore} />
           </CardContent>
         </Card>
         {[
@@ -169,6 +170,19 @@ export default function Dashboard() {
               </div>
             ))}
           </div>
+        </CardContent>
+      </Card>
+
+      {/* D3 Risk Heatmap */}
+      <Card className="border-border bg-card">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
+            <Grid3X3 className="h-4 w-4 text-primary" />
+            VENDOR × DIMENSION RISK HEATMAP
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <RiskHeatmap />
         </CardContent>
       </Card>
 
