@@ -17,8 +17,9 @@ export default {
         sans: ["Satoshi", "system-ui", "sans-serif"],
         display: ["Cabinet Grotesk", "Satoshi", "sans-serif"],
         heading: ["Cabinet Grotesk", "Satoshi", "sans-serif"],
+        serif: ["Instrument Serif", "Georgia", "serif"],
         mono: ["JetBrains Mono", "monospace"],
-        body: ["General Sans", "Satoshi", "sans-serif"],
+        body: ["Plus Jakarta Sans", "Satoshi", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -55,8 +56,8 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         surface: {
-          DEFAULT: "hsl(var(--surface, 225 22% 9%))",
-          elevated: "hsl(var(--surface-elevated, 225 20% 12%))",
+          DEFAULT: "hsl(var(--surface, 228 22% 8%))",
+          elevated: "hsl(var(--surface-elevated, 228 20% 11%))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -88,6 +89,7 @@ export default {
         sm: "calc(var(--radius) - 4px)",
         xl: "calc(var(--radius) + 4px)",
         "2xl": "calc(var(--radius) + 8px)",
+        "3xl": "calc(var(--radius) + 16px)",
       },
       keyframes: {
         "accordion-down": {
@@ -98,10 +100,14 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "border-beam": {
+          "100%": { "offset-distance": "100%" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "border-beam": "border-beam calc(var(--duration)*1s) infinite linear",
       },
     },
   },
