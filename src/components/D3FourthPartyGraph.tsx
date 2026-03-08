@@ -21,39 +21,36 @@ interface FourthPartyGraphProps {
   className?: string;
 }
 
-const subVendorData: Record<string, { nodes: Omit<GraphNode, keyof d3.SimulationNodeDatum>[]; links: Omit<GraphLink, keyof d3.SimulationLinkDatum<GraphNode>>[] }> = {
-  default: {
-    nodes: [
-      { id: "main", name: "Primary Vendor", type: "vendor", risk: 40, group: 0 },
-      { id: "sv1", name: "AWS ap-south-1", type: "infrastructure", risk: 15, group: 1 },
-      { id: "sv2", name: "Cloudflare CDN", type: "infrastructure", risk: 10, group: 1 },
-      { id: "sv3", name: "MongoDB Atlas", type: "subvendor", risk: 25, group: 2 },
-      { id: "sv4", name: "Twilio SMS", type: "subvendor", risk: 30, group: 2 },
-      { id: "sv5", name: "SendGrid", type: "subvendor", risk: 20, group: 2 },
-      { id: "sv6", name: "Auth0", type: "subvendor", risk: 22, group: 3 },
-      { id: "sv7", name: "Stripe India", type: "subvendor", risk: 18, group: 3 },
-      { id: "sv8", name: "GCP (Backup)", type: "infrastructure", risk: 12, group: 1 },
-      { id: "sv9", name: "Razorpay", type: "subvendor", risk: 35, group: 3 },
-      { id: "sv10", name: "DigiLocker API", type: "subvendor", risk: 28, group: 4 },
-      { id: "sv11", name: "NSDL e-Sign", type: "subvendor", risk: 32, group: 4 },
-    ],
-    links: [
-      { source: "main", target: "sv1", type: "direct", strength: 0.9 },
-      { source: "main", target: "sv2", type: "direct", strength: 0.7 },
-      { source: "main", target: "sv3", type: "direct", strength: 0.8 },
-      { source: "main", target: "sv4", type: "direct", strength: 0.5 },
-      { source: "main", target: "sv5", type: "direct", strength: 0.4 },
-      { source: "main", target: "sv6", type: "direct", strength: 0.6 },
-      { source: "main", target: "sv7", type: "direct", strength: 0.7 },
-      { source: "sv3", target: "sv1", type: "indirect", strength: 0.6 },
-      { source: "sv6", target: "sv1", type: "indirect", strength: 0.5 },
-      { source: "sv7", target: "sv9", type: "indirect", strength: 0.4 },
-      { source: "main", target: "sv10", type: "direct", strength: 0.5 },
-      { source: "sv10", target: "sv11", type: "indirect", strength: 0.7 },
-      { source: "sv1", target: "sv8", type: "indirect", strength: 0.3 },
-    ],
-  },
-};
+const defaultNodes: Array<{ id: string; name: string; type: "vendor" | "subvendor" | "infrastructure"; risk: number; group: number }> = [
+  { id: "main", name: "Primary Vendor", type: "vendor", risk: 40, group: 0 },
+  { id: "sv1", name: "AWS ap-south-1", type: "infrastructure", risk: 15, group: 1 },
+  { id: "sv2", name: "Cloudflare CDN", type: "infrastructure", risk: 10, group: 1 },
+  { id: "sv3", name: "MongoDB Atlas", type: "subvendor", risk: 25, group: 2 },
+  { id: "sv4", name: "Twilio SMS", type: "subvendor", risk: 30, group: 2 },
+  { id: "sv5", name: "SendGrid", type: "subvendor", risk: 20, group: 2 },
+  { id: "sv6", name: "Auth0", type: "subvendor", risk: 22, group: 3 },
+  { id: "sv7", name: "Stripe India", type: "subvendor", risk: 18, group: 3 },
+  { id: "sv8", name: "GCP (Backup)", type: "infrastructure", risk: 12, group: 1 },
+  { id: "sv9", name: "Razorpay", type: "subvendor", risk: 35, group: 3 },
+  { id: "sv10", name: "DigiLocker API", type: "subvendor", risk: 28, group: 4 },
+  { id: "sv11", name: "NSDL e-Sign", type: "subvendor", risk: 32, group: 4 },
+];
+
+const defaultLinks: GraphLink[] = [
+  { source: "main", target: "sv1", type: "direct", strength: 0.9 },
+  { source: "main", target: "sv2", type: "direct", strength: 0.7 },
+  { source: "main", target: "sv3", type: "direct", strength: 0.8 },
+  { source: "main", target: "sv4", type: "direct", strength: 0.5 },
+  { source: "main", target: "sv5", type: "direct", strength: 0.4 },
+  { source: "main", target: "sv6", type: "direct", strength: 0.6 },
+  { source: "main", target: "sv7", type: "direct", strength: 0.7 },
+  { source: "sv3", target: "sv1", type: "indirect", strength: 0.6 },
+  { source: "sv6", target: "sv1", type: "indirect", strength: 0.5 },
+  { source: "sv7", target: "sv9", type: "indirect", strength: 0.4 },
+  { source: "main", target: "sv10", type: "direct", strength: 0.5 },
+  { source: "sv10", target: "sv11", type: "indirect", strength: 0.7 },
+  { source: "sv1", target: "sv8", type: "indirect", strength: 0.3 },
+];
 
 export function FourthPartyGraph({ vendorName, className }: FourthPartyGraphProps) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -67,18 +64,18 @@ export function FourthPartyGraph({ vendorName, className }: FourthPartyGraphProp
     const width = container.clientWidth;
     const height = 400;
 
-    const data = subVendorData.default;
-    const nodesData: GraphNode[] = data.nodes.map((n) => ({
+    const nodesData: GraphNode[] = defaultNodes.map((n) => ({
       ...n,
       name: n.id === "main" ? vendorName : n.name,
     }));
-    const linksData: GraphLink[] = data.links.map((l) => ({ ...l }));
+
+    // Deep copy links for d3 mutation
+    const linksData = defaultLinks.map((l) => ({ ...l } as any);
 
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
     svg.attr("width", width).attr("height", height);
 
-    // Defs
     const defs = svg.append("defs");
     const glowFilter = defs.append("filter").attr("id", "glow");
     glowFilter.append("feGaussianBlur").attr("stdDeviation", "3").attr("result", "coloredBlur");
@@ -94,24 +91,22 @@ export function FourthPartyGraph({ vendorName, className }: FourthPartyGraphProp
     };
 
     const simulation = d3.forceSimulation(nodesData)
-      .force("link", d3.forceLink<GraphNode, GraphLink>(linksData).id((d) => d.id).distance(80).strength(0.5))
+      .force("link", d3.forceLink(linksData).id((d: any) => d.id).distance(80).strength(0.5))
       .force("charge", d3.forceManyBody().strength(-200))
       .force("center", d3.forceCenter(width / 2, height / 2))
       .force("collision", d3.forceCollide().radius(30));
 
-    // Links
     const link = svg.append("g")
       .selectAll("line")
       .data(linksData)
       .join("line")
-      .attr("stroke", (d) => d.type === "direct" ? "hsl(190, 90%, 50%)" : "hsl(220, 15%, 25%)")
-      .attr("stroke-width", (d) => d.strength * 2)
-      .attr("stroke-dasharray", (d) => d.type === "indirect" ? "4,4" : "none")
+      .attr("stroke", (d: any) => d.type === "direct" ? "hsl(190, 90%, 50%)" : "hsl(220, 15%, 25%)")
+      .attr("stroke-width", (d: any) => d.strength * 2)
+      .attr("stroke-dasharray", (d: any) => d.type === "indirect" ? "4,4" : "none")
       .attr("opacity", 0.5);
 
-    // Nodes
     const node = svg.append("g")
-      .selectAll("g")
+      .selectAll<SVGGElement, GraphNode>("g")
       .data(nodesData)
       .join("g")
       .style("cursor", "pointer")
@@ -132,7 +127,6 @@ export function FourthPartyGraph({ vendorName, className }: FourthPartyGraphProp
         })
       );
 
-    // Node circles
     node.append("circle")
       .attr("r", (d) => d.type === "vendor" ? 20 : d.type === "infrastructure" ? 14 : 12)
       .attr("fill", (d) => riskColor(d.risk))
@@ -149,7 +143,6 @@ export function FourthPartyGraph({ vendorName, className }: FourthPartyGraphProp
         setHoveredNode(null);
       });
 
-    // Node labels
     node.append("text")
       .attr("dy", (d) => (d.type === "vendor" ? 32 : 24))
       .attr("text-anchor", "middle")
@@ -158,7 +151,6 @@ export function FourthPartyGraph({ vendorName, className }: FourthPartyGraphProp
       .attr("font-family", "JetBrains Mono, monospace")
       .text((d) => d.name.length > 14 ? d.name.slice(0, 14) + "…" : d.name);
 
-    // Risk score inside
     node.append("text")
       .attr("text-anchor", "middle")
       .attr("dominant-baseline", "middle")
@@ -170,20 +162,20 @@ export function FourthPartyGraph({ vendorName, className }: FourthPartyGraphProp
 
     simulation.on("tick", () => {
       link
-        .attr("x1", (d) => (d.source as GraphNode).x || 0)
-        .attr("y1", (d) => (d.source as GraphNode).y || 0)
-        .attr("x2", (d) => (d.target as GraphNode).x || 0)
-        .attr("y2", (d) => (d.target as GraphNode).y || 0);
+        .attr("x1", (d: any) => d.source.x || 0)
+        .attr("y1", (d: any) => d.source.y || 0)
+        .attr("x2", (d: any) => d.target.x || 0)
+        .attr("y2", (d: any) => d.target.y || 0);
 
       node.attr("transform", (d) => `translate(${d.x || 0},${d.y || 0})`);
     });
 
-    return () => simulation.stop();
+    return () => { simulation.stop(); };
   }, [vendorName]);
 
   useEffect(() => {
     const cleanup = drawGraph();
-    return cleanup;
+    return () => { if (cleanup) cleanup(); };
   }, [drawGraph]);
 
   return (
