@@ -6,6 +6,9 @@ import { RiskBadge } from "@/components/RiskBadge";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { CertInClock } from "@/components/CertInClock";
 import { FourthPartyGraph } from "@/components/D3FourthPartyGraph";
+import { PageTransition } from "@/components/motion/PageTransition";
+import { StaggerContainer } from "@/components/motion/StaggerContainer";
+import { StaggerItem } from "@/components/motion/StaggerItem";
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, PolarRadiusAxis } from "recharts";
 
 export default function VendorDetail() {
@@ -31,7 +34,7 @@ export default function VendorDetail() {
   }));
 
   return (
-    <div className="space-y-4 p-4 lg:p-6 animate-fade-in-up">
+    <PageTransition className="space-y-4 p-4 lg:p-6">
       <button onClick={() => navigate("/vendors")} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
         <ArrowLeft className="h-3.5 w-3.5" /> Back to Registry
       </button>
@@ -53,140 +56,149 @@ export default function VendorDetail() {
       </div>
 
       {vendor.certInClock?.active && (
-        <CertInClock vendorName={vendor.name} remaining={vendor.certInClock.remaining} />
+        <StaggerItem>
+          <CertInClock vendorName={vendor.name} remaining={vendor.certInClock.remaining} />
+        </StaggerItem>
       )}
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        {/* Radar Chart */}
-        <Card className="border-border bg-card">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-mono tracking-wider">9-DIMENSION RISK PROFILE</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <RadarChart data={radarData}>
-                <PolarGrid stroke="hsl(220, 15%, 18%)" />
-                <PolarAngleAxis dataKey="dimension" tick={{ fontSize: 9, fill: "hsl(215, 15%, 55%)" }} />
-                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 8, fill: "hsl(215, 15%, 55%)" }} />
-                <Radar name="Score" dataKey="score" stroke="hsl(190, 90%, 50%)" fill="hsl(190, 90%, 50%)" fillOpacity={0.2} strokeWidth={2} />
-              </RadarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+      <StaggerContainer className="grid gap-4 lg:grid-cols-2">
+        <StaggerItem>
+          <Card className="border-border bg-card h-full">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-mono tracking-wider">9-DIMENSION RISK PROFILE</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <RadarChart data={radarData}>
+                  <PolarGrid stroke="hsl(220, 15%, 18%)" />
+                  <PolarAngleAxis dataKey="dimension" tick={{ fontSize: 9, fill: "hsl(215, 15%, 55%)" }} />
+                  <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 8, fill: "hsl(215, 15%, 55%)" }} />
+                  <Radar name="Score" dataKey="score" stroke="hsl(190, 90%, 50%)" fill="hsl(190, 90%, 50%)" fillOpacity={0.2} strokeWidth={2} />
+                </RadarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </StaggerItem>
 
-        {/* Dimension Scores */}
-        <Card className="border-border bg-card">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-mono tracking-wider">CATEGORY SCORES</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {Object.entries(vendor.dimensions).map(([key, value]) => (
-              <div key={key} className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">{dimensionLabels[key]}</span>
-                  <span className={`font-mono text-xs font-bold ${value <= 24 ? "text-risk-critical-foreground" : value <= 49 ? "text-risk-high" : value <= 74 ? "text-risk-watch" : "text-risk-stable"}`}>
-                    {value}
-                  </span>
+        <StaggerItem>
+          <Card className="border-border bg-card h-full">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-mono tracking-wider">CATEGORY SCORES</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {Object.entries(vendor.dimensions).map(([key, value]) => (
+                <div key={key} className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">{dimensionLabels[key]}</span>
+                    <span className={`font-mono text-xs font-bold ${value <= 24 ? "text-risk-critical-foreground" : value <= 49 ? "text-risk-high" : value <= 74 ? "text-risk-watch" : "text-risk-stable"}`}>
+                      {value}
+                    </span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-secondary">
+                    <div
+                      className="h-full rounded-full transition-all duration-700"
+                      style={{
+                        width: `${value}%`,
+                        backgroundColor: value <= 24 ? "hsl(var(--risk-critical-foreground))" : value <= 49 ? "hsl(var(--risk-high))" : value <= 74 ? "hsl(var(--risk-watch))" : "hsl(var(--risk-stable))",
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="h-1.5 rounded-full bg-secondary">
-                  <div
-                    className="h-full rounded-full transition-all duration-700"
-                    style={{
-                      width: `${value}%`,
-                      backgroundColor: value <= 24 ? "hsl(var(--risk-critical-foreground))" : value <= 49 ? "hsl(var(--risk-high))" : value <= 74 ? "hsl(var(--risk-watch))" : "hsl(var(--risk-stable))",
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
+              ))}
+            </CardContent>
+          </Card>
+        </StaggerItem>
+      </StaggerContainer>
 
-      {/* Fourth-Party Dependency Graph */}
-      <Card className="border-border bg-card">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
-            <Share2 className="h-4 w-4 text-primary" /> FOURTH-PARTY DEPENDENCY MAP
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FourthPartyGraph vendorName={vendor.name} />
-        </CardContent>
-      </Card>
-
-      {/* Triggers */}
-      {vendor.triggers.length > 0 && (
+      <StaggerItem>
         <Card className="border-border bg-card">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
-              <AlertTriangle className="h-4 w-4 text-risk-high" /> ACTIVE TRIGGERS
+              <Share2 className="h-4 w-4 text-primary" /> FOURTH-PARTY DEPENDENCY MAP
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              {vendor.triggers.map((trigger, i) => (
-                <div key={i} className="flex items-center gap-2 rounded border border-risk-high/20 bg-risk-high/5 px-3 py-2">
-                  <span className="h-1.5 w-1.5 rounded-full bg-risk-high" />
-                  <span className="text-xs text-foreground">{trigger}</span>
-                </div>
-              ))}
-            </div>
+            <FourthPartyGraph vendorName={vendor.name} />
           </CardContent>
         </Card>
+      </StaggerItem>
+
+      {vendor.triggers.length > 0 && (
+        <StaggerItem>
+          <Card className="border-border bg-card">
+            <CardHeader className="pb-2">
+              <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
+                <AlertTriangle className="h-4 w-4 text-risk-high" /> ACTIVE TRIGGERS
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {vendor.triggers.map((trigger, i) => (
+                  <div key={i} className="flex items-center gap-2 rounded border border-risk-high/20 bg-risk-high/5 px-3 py-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-risk-high" />
+                    <span className="text-xs text-foreground">{trigger}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </StaggerItem>
       )}
 
-      {/* Alerts & Workflows */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="border-border bg-card">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-mono tracking-wider">ALERTS ({vendorAlerts.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {vendorAlerts.length === 0 ? (
-              <p className="text-xs text-muted-foreground">No active alerts.</p>
-            ) : (
-              <div className="space-y-2">
-                {vendorAlerts.map((alert) => (
-                  <div key={alert.id} className="rounded border border-border p-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-foreground">{alert.title}</span>
-                      <RiskBadge band={alert.severity} />
+      <StaggerContainer className="grid gap-4 lg:grid-cols-2">
+        <StaggerItem>
+          <Card className="border-border bg-card h-full">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-mono tracking-wider">ALERTS ({vendorAlerts.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {vendorAlerts.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No active alerts.</p>
+              ) : (
+                <div className="space-y-2">
+                  {vendorAlerts.map((alert) => (
+                    <div key={alert.id} className="rounded border border-border p-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-foreground">{alert.title}</span>
+                        <RiskBadge band={alert.severity} />
+                      </div>
+                      <p className="mt-1 text-[10px] text-muted-foreground">{alert.dimension} • {alert.status}</p>
                     </div>
-                    <p className="mt-1 text-[10px] text-muted-foreground">{alert.dimension} • {alert.status}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </StaggerItem>
 
-        <Card className="border-border bg-card">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-mono tracking-wider">WORKFLOWS ({vendorWorkflows.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {vendorWorkflows.length === 0 ? (
-              <p className="text-xs text-muted-foreground">No active workflows.</p>
-            ) : (
-              <div className="space-y-2">
-                {vendorWorkflows.map((w) => (
-                  <div key={w.id} className="rounded border border-border p-2">
-                    <p className="text-xs font-medium text-foreground">{w.title}</p>
-                    <div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
-                      <span className={`rounded px-1 py-0.5 font-mono ${w.status === "open" ? "bg-risk-watch/10 text-risk-watch" : w.status === "in_progress" ? "bg-primary/10 text-primary" : "bg-secondary text-secondary-foreground"}`}>
-                        {w.status.replace("_", " ")}
-                      </span>
-                      <span>→ {w.assignedTo}</span>
-                      <span>Due: {new Date(w.dueDate).toLocaleDateString()}</span>
+        <StaggerItem>
+          <Card className="border-border bg-card h-full">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-mono tracking-wider">WORKFLOWS ({vendorWorkflows.length})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {vendorWorkflows.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No active workflows.</p>
+              ) : (
+                <div className="space-y-2">
+                  {vendorWorkflows.map((w) => (
+                    <div key={w.id} className="rounded border border-border p-2">
+                      <p className="text-xs font-medium text-foreground">{w.title}</p>
+                      <div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
+                        <span className={`rounded px-1 py-0.5 font-mono ${w.status === "open" ? "bg-risk-watch/10 text-risk-watch" : w.status === "in_progress" ? "bg-primary/10 text-primary" : "bg-secondary text-secondary-foreground"}`}>
+                          {w.status.replace("_", " ")}
+                        </span>
+                        <span>→ {w.assignedTo}</span>
+                        <span>Due: {new Date(w.dueDate).toLocaleDateString()}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </StaggerItem>
+      </StaggerContainer>
+    </PageTransition>
   );
 }

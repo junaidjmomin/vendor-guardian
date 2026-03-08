@@ -6,6 +6,9 @@ import { vendors, type RiskBand } from "@/data/mockData";
 import { RiskBadge } from "@/components/RiskBadge";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { VendorSunburst } from "@/components/D3VendorSunburst";
+import { PageTransition } from "@/components/motion/PageTransition";
+import { StaggerContainer } from "@/components/motion/StaggerContainer";
+import { StaggerItem } from "@/components/motion/StaggerItem";
 import { useNavigate } from "react-router-dom";
 
 export default function VendorRegistry() {
@@ -35,7 +38,7 @@ export default function VendorRegistry() {
   ];
 
   return (
-    <div className="space-y-4 p-4 lg:p-6 animate-fade-in-up">
+    <PageTransition className="space-y-4 p-4 lg:p-6">
       <div className="flex items-center gap-2">
         <Building2 className="h-5 w-5 text-primary" />
         <h1 className="font-mono text-lg font-bold tracking-wider text-primary">VENDOR REGISTRY</h1>
@@ -65,50 +68,53 @@ export default function VendorRegistry() {
           Sort: {sortBy}
         </button>
       </div>
-      {/* Sunburst Chart */}
-      <Card className="border-border bg-card">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
-            <PieChart className="h-4 w-4 text-primary" />
-            VENDOR CATEGORY SUNBURST
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <VendorSunburst />
-        </CardContent>
-      </Card>
 
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <StaggerItem>
+        <Card className="border-border bg-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
+              <PieChart className="h-4 w-4 text-primary" />
+              VENDOR CATEGORY SUNBURST
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <VendorSunburst />
+          </CardContent>
+        </Card>
+      </StaggerItem>
+
+      <StaggerContainer className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {filtered.map((vendor) => (
-          <Card
-            key={vendor.id}
-            onClick={() => navigate(`/vendors/${vendor.id}`)}
-            className="cursor-pointer border-border bg-card hover:border-primary/30 transition-all"
-          >
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-semibold text-foreground">{vendor.name}</h3>
-                    <RiskBadge band={vendor.riskBand} />
+          <StaggerItem key={vendor.id}>
+            <Card
+              onClick={() => navigate(`/vendors/${vendor.id}`)}
+              className="cursor-pointer border-border bg-card hover:border-primary/30 transition-all h-full"
+            >
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-semibold text-foreground">{vendor.name}</h3>
+                      <RiskBadge band={vendor.riskBand} />
+                    </div>
+                    <p className="mt-0.5 text-[11px] text-muted-foreground">{vendor.category}</p>
+                    <div className="mt-2 flex items-center gap-3 text-[10px] text-muted-foreground">
+                      <span>Tier: <span className="text-foreground font-medium">{vendor.tier}</span></span>
+                      <span>Contract: {vendor.contractExpiry}</span>
+                    </div>
                   </div>
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">{vendor.category}</p>
-                  <div className="mt-2 flex items-center gap-3 text-[10px] text-muted-foreground">
-                    <span>Tier: <span className="text-foreground font-medium">{vendor.tier}</span></span>
-                    <span>Contract: {vendor.contractExpiry}</span>
+                  <ScoreGauge score={vendor.compositeScore} previousScore={vendor.previousScore} size="sm" />
+                </div>
+                {vendor.triggers.length > 0 && (
+                  <div className="mt-3 border-t border-border pt-2">
+                    <p className="text-[10px] text-risk-high truncate">{vendor.triggers[0]}</p>
                   </div>
-                </div>
-                <ScoreGauge score={vendor.compositeScore} previousScore={vendor.previousScore} size="sm" />
-              </div>
-              {vendor.triggers.length > 0 && (
-                <div className="mt-3 border-t border-border pt-2">
-                  <p className="text-[10px] text-risk-high truncate">{vendor.triggers[0]}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                )}
+              </CardContent>
+            </Card>
+          </StaggerItem>
         ))}
-      </div>
-    </div>
+      </StaggerContainer>
+    </PageTransition>
   );
 }

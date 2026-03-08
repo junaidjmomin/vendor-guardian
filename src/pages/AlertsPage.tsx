@@ -4,6 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { alerts, type RiskBand } from "@/data/mockData";
 import { RiskBadge } from "@/components/RiskBadge";
 import { AlertTimeline } from "@/components/D3AlertTimeline";
+import { PageTransition } from "@/components/motion/PageTransition";
+import { StaggerContainer } from "@/components/motion/StaggerContainer";
+import { StaggerItem } from "@/components/motion/StaggerItem";
 import { useNavigate } from "react-router-dom";
 
 export default function AlertsPage() {
@@ -18,7 +21,7 @@ export default function AlertsPage() {
   });
 
   return (
-    <div className="space-y-4 p-4 lg:p-6 animate-fade-in-up">
+    <PageTransition className="space-y-4 p-4 lg:p-6">
       <div className="flex items-center gap-2">
         <Bell className="h-5 w-5 text-primary" />
         <h1 className="font-mono text-lg font-bold tracking-wider text-primary">ALERT FEED</h1>
@@ -26,18 +29,20 @@ export default function AlertsPage() {
           {alerts.filter((a) => a.status === "new").length} new
         </span>
       </div>
-      {/* Alert Timeline */}
-      <Card className="border-border bg-card">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
-            <History className="h-4 w-4 text-primary" />
-            ALERT HISTORY TIMELINE
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <AlertTimeline />
-        </CardContent>
-      </Card>
+
+      <StaggerItem>
+        <Card className="border-border bg-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
+              <History className="h-4 w-4 text-primary" />
+              ALERT HISTORY TIMELINE
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AlertTimeline />
+          </CardContent>
+        </Card>
+      </StaggerItem>
 
       <div className="flex flex-wrap gap-2">
         {(["all", "critical", "high", "watch", "stable"] as const).map((s) => (
@@ -53,37 +58,39 @@ export default function AlertsPage() {
         ))}
       </div>
 
-      <div className="space-y-2">
+      <StaggerContainer className="space-y-2">
         {filtered.map((alert) => (
-          <Card key={alert.id} className="border-border bg-card hover:border-primary/20 transition-colors cursor-pointer" onClick={() => navigate(`/vendors/${alert.vendorId}`)}>
-            <CardContent className="flex items-start gap-4 p-4">
-              <div className="mt-0.5">
-                <RiskBadge band={alert.severity} size="md" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-sm font-semibold text-foreground">{alert.title}</h3>
-                    <p className="mt-0.5 text-xs text-primary">{alert.vendorName}</p>
+          <StaggerItem key={alert.id}>
+            <Card className="border-border bg-card hover:border-primary/20 transition-colors cursor-pointer" onClick={() => navigate(`/vendors/${alert.vendorId}`)}>
+              <CardContent className="flex items-start gap-4 p-4">
+                <div className="mt-0.5">
+                  <RiskBadge band={alert.severity} size="md" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="text-sm font-semibold text-foreground">{alert.title}</h3>
+                      <p className="mt-0.5 text-xs text-primary">{alert.vendorName}</p>
+                    </div>
+                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                      <Clock className="h-3 w-3" />
+                      {new Date(alert.timestamp).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                    <Clock className="h-3 w-3" />
-                    {new Date(alert.timestamp).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+                  <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{alert.description}</p>
+                  <div className="mt-2 flex items-center gap-3 text-[10px]">
+                    <span className="rounded bg-secondary px-1.5 py-0.5 text-secondary-foreground">{alert.dimension}</span>
+                    <span className={`rounded px-1.5 py-0.5 font-medium ${alert.status === "new" ? "bg-risk-high/10 text-risk-high" : alert.status === "acknowledged" ? "bg-risk-watch/10 text-risk-watch" : "bg-primary/10 text-primary"}`}>
+                      {alert.status}
+                    </span>
+                    {alert.assignedTo && <span className="text-muted-foreground">→ {alert.assignedTo}</span>}
                   </div>
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{alert.description}</p>
-                <div className="mt-2 flex items-center gap-3 text-[10px]">
-                  <span className="rounded bg-secondary px-1.5 py-0.5 text-secondary-foreground">{alert.dimension}</span>
-                  <span className={`rounded px-1.5 py-0.5 font-medium ${alert.status === "new" ? "bg-risk-high/10 text-risk-high" : alert.status === "acknowledged" ? "bg-risk-watch/10 text-risk-watch" : "bg-primary/10 text-primary"}`}>
-                    {alert.status}
-                  </span>
-                  {alert.assignedTo && <span className="text-muted-foreground">→ {alert.assignedTo}</span>}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </StaggerItem>
         ))}
-      </div>
-    </div>
+      </StaggerContainer>
+    </PageTransition>
   );
 }
