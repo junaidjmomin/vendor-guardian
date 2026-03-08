@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, Building2, AlertTriangle, Eye, TrendingDown, Shield, Grid3X3, Activity, Clock, Layers } from "lucide-react";
+import { ArrowDown, ArrowUp, Building2, AlertTriangle, Eye, TrendingDown, Shield, Grid3X3, Activity, Clock, Layers, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { vendors, alerts, riskTrendData, complianceData } from "@/data/mockData";
 import { RiskBadge } from "@/components/RiskBadge";
@@ -14,6 +14,17 @@ import { StaggerItem } from "@/components/motion/StaggerItem";
 import { useNavigate } from "react-router-dom";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 
+function SectionHeader({ icon: Icon, title, iconBg = "bg-primary/10", iconColor = "text-primary" }: { icon: any; title: string; iconBg?: string; iconColor?: string }) {
+  return (
+    <CardTitle className="flex items-center gap-3 text-sm font-display font-bold tracking-tight">
+      <div className={`h-8 w-8 rounded-xl ${iconBg} flex items-center justify-center`}>
+        <Icon className={`h-4 w-4 ${iconColor}`} />
+      </div>
+      {title}
+    </CardTitle>
+  );
+}
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const criticalVendors = vendors.filter((v) => v.riskBand === "critical");
@@ -26,36 +37,34 @@ export default function Dashboard() {
   const aggregateScore = Math.round(vendors.reduce((a, v) => a + v.compositeScore, 0) / vendors.length);
 
   const riskCounts = [
-    { label: "CRITICAL", count: criticalVendors.length, icon: "◆", colorClass: "text-risk-critical-foreground", bgClass: "bg-risk-critical-foreground/10", borderClass: "border-risk-critical-foreground/20" },
-    { label: "HIGH RISK", count: highVendors.length, icon: "▲", colorClass: "text-risk-high", bgClass: "bg-risk-high/10", borderClass: "border-risk-high/20" },
-    { label: "WATCH", count: watchVendors.length, icon: "●", colorClass: "text-risk-watch", bgClass: "bg-risk-watch/10", borderClass: "border-risk-watch/20" },
-    { label: "STABLE", count: stableVendors.length, icon: "✦", colorClass: "text-risk-stable", bgClass: "bg-risk-stable/10", borderClass: "border-risk-stable/20" },
+    { label: "CRITICAL", count: criticalVendors.length, icon: "◆", colorClass: "text-risk-critical-foreground", bgClass: "bg-risk-critical-foreground/10", borderHover: "hover:border-risk-critical-foreground/25" },
+    { label: "HIGH RISK", count: highVendors.length, icon: "▲", colorClass: "text-risk-high", bgClass: "bg-risk-high/10", borderHover: "hover:border-risk-high/25" },
+    { label: "WATCH", count: watchVendors.length, icon: "●", colorClass: "text-risk-watch", bgClass: "bg-risk-watch/10", borderHover: "hover:border-risk-watch/25" },
+    { label: "STABLE", count: stableVendors.length, icon: "✦", colorClass: "text-risk-stable", bgClass: "bg-risk-stable/10", borderHover: "hover:border-risk-stable/25" },
   ];
 
   return (
     <PageTransition className="space-y-6 p-5 lg:p-8 max-w-[1600px] mx-auto">
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <div className="flex items-center gap-2.5">
-            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Eye className="h-4 w-4 text-primary" />
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+              <Eye className="h-5 w-5 text-primary" />
             </div>
-            <h1 className="font-display text-xl font-bold tracking-tight text-foreground">Risk Command Center</h1>
+            <div>
+              <h1 className="font-display text-2xl font-extrabold tracking-tight text-foreground">Risk Command Center</h1>
+              <p className="text-xs text-muted-foreground mt-0.5 font-body">Mon, 04 Mar 2024 — 09:04 IST</p>
+            </div>
           </div>
-          <p className="text-xs text-muted-foreground mt-1.5 ml-[42px]">Mon, 04 Mar 2024 — 09:04 IST</p>
         </div>
         <div className="flex items-center gap-3">
           {newAlerts > 0 && (
-            <button onClick={() => navigate("/alerts")} className="flex items-center gap-2 rounded-xl border border-risk-high/20 bg-risk-high/5 px-4 py-2 text-xs font-display font-semibold text-risk-high hover:bg-risk-high/10 transition-all">
+            <button onClick={() => navigate("/alerts")} className="flex items-center gap-2 rounded-xl border border-risk-high/20 bg-risk-high/5 px-4 py-2.5 text-xs font-display font-bold text-risk-high hover:bg-risk-high/10 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-risk-high/10">
               <AlertTriangle className="h-3.5 w-3.5" />
               {newAlerts} New Alert{newAlerts > 1 ? "s" : ""}
             </button>
           )}
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-risk-stable/5 border border-risk-stable/20">
-            <div className="h-1.5 w-1.5 rounded-full bg-risk-stable animate-pulse" />
-            <span className="text-[11px] text-risk-stable font-mono font-medium">LIVE</span>
-          </div>
         </div>
       </div>
 
@@ -72,9 +81,9 @@ export default function Dashboard() {
 
       {/* Posture Summary - Hero Row */}
       <StaggerContainer className="grid gap-4 grid-cols-2 lg:grid-cols-6">
-        {/* Risk Orb - spans 2 cols */}
+        {/* Risk Orb */}
         <StaggerItem className="col-span-2">
-          <Card className="border-border/60 bg-card/80 backdrop-blur-sm overflow-hidden h-full rounded-2xl hover:border-primary/20 transition-colors duration-300">
+          <Card className="border-border/40 glass-card overflow-hidden h-full rounded-2xl hover:border-primary/15 transition-all duration-300 shine-sweep">
             <CardContent className="p-0">
               <RiskOrb score={aggregateScore} />
             </CardContent>
@@ -84,13 +93,13 @@ export default function Dashboard() {
         {/* Risk Count Cards */}
         {riskCounts.map((item) => (
           <StaggerItem key={item.label}>
-            <Card className={`border-border/60 bg-card/80 backdrop-blur-sm h-full rounded-2xl hover:${item.borderClass} transition-all duration-300 group`}>
+            <Card className={`border-border/40 glass-card h-full rounded-2xl ${item.borderHover} transition-all duration-300 group hover:-translate-y-0.5 hover:shadow-lg`}>
               <CardContent className="flex flex-col items-center justify-center p-5 h-full">
-                <div className={`h-8 w-8 rounded-lg ${item.bgClass} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
+                <div className={`h-9 w-9 rounded-xl ${item.bgClass} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300`}>
                   <span className={`text-sm ${item.colorClass}`}>{item.icon}</span>
                 </div>
-                <span className={`font-mono text-3xl font-bold ${item.colorClass}`}>{item.count}</span>
-                <span className="text-[10px] font-display font-medium tracking-wider text-muted-foreground mt-1.5 uppercase">{item.label}</span>
+                <span className={`font-mono text-3xl font-extrabold ${item.colorClass}`}>{item.count}</span>
+                <span className="text-[10px] font-display font-semibold tracking-[0.15em] text-muted-foreground mt-2 uppercase">{item.label}</span>
               </CardContent>
             </Card>
           </StaggerItem>
@@ -100,37 +109,32 @@ export default function Dashboard() {
       {/* Critical Vendors + Risk Trend */}
       <StaggerContainer className="grid gap-5 lg:grid-cols-3">
         <StaggerItem className="lg:col-span-2">
-          <Card className="border-border/60 bg-card/80 backdrop-blur-sm h-full rounded-2xl">
-            <CardHeader className="pb-3 pt-5 px-6">
-              <CardTitle className="flex items-center gap-2.5 text-sm font-display font-semibold tracking-tight">
-                <div className="h-7 w-7 rounded-lg bg-risk-high/10 flex items-center justify-center">
-                  <AlertTriangle className="h-3.5 w-3.5 text-risk-high" />
-                </div>
-                Critical & High Risk Vendors
-              </CardTitle>
+          <Card className="border-border/40 glass-card h-full rounded-2xl">
+            <CardHeader className="pb-3 pt-6 px-6">
+              <SectionHeader icon={AlertTriangle} title="Critical & High Risk Vendors" iconBg="bg-risk-high/10" iconColor="text-risk-high" />
             </CardHeader>
-            <CardContent className="p-0 pb-1">
-              <div className="divide-y divide-border/50">
+            <CardContent className="p-0 pb-2">
+              <div className="divide-y divide-border/30">
                 {[...criticalVendors, ...highVendors].map((vendor) => (
                   <button
                     key={vendor.id}
                     onClick={() => navigate(`/vendors/${vendor.id}`)}
-                    className="flex w-full items-center justify-between px-6 py-3.5 text-left hover:bg-secondary/30 transition-all duration-200 group"
+                    className="flex w-full items-center justify-between px-6 py-4 text-left hover:bg-secondary/20 transition-all duration-200 group"
                   >
                     <div className="flex items-center gap-4">
                       <ScoreGauge score={vendor.compositeScore} previousScore={vendor.previousScore} size="sm" showDelta={false} />
                       <div>
-                        <p className="text-sm font-display font-medium text-foreground group-hover:text-primary transition-colors">{vendor.name}</p>
-                        <p className="text-[11px] text-muted-foreground mt-0.5">{vendor.category}</p>
+                        <p className="text-sm font-display font-semibold text-foreground group-hover:text-primary transition-colors">{vendor.name}</p>
+                        <p className="text-[11px] text-muted-foreground mt-0.5 font-body">{vendor.category}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="text-right hidden sm:block">
                         <div className="flex items-center gap-1 text-risk-high">
                           <ArrowDown className="h-3 w-3" />
-                          <span className="font-mono text-xs font-semibold">{vendor.previousScore - vendor.compositeScore}</span>
+                          <span className="font-mono text-xs font-bold">{vendor.previousScore - vendor.compositeScore}</span>
                         </div>
-                        <p className="text-[10px] text-muted-foreground truncate max-w-[200px] mt-0.5">{vendor.triggers[0]}</p>
+                        <p className="text-[10px] text-muted-foreground truncate max-w-[200px] mt-0.5 font-body">{vendor.triggers[0]}</p>
                       </div>
                       <RiskBadge band={vendor.riskBand} />
                     </div>
@@ -142,27 +146,22 @@ export default function Dashboard() {
         </StaggerItem>
 
         <StaggerItem>
-          <Card className="border-border/60 bg-card/80 backdrop-blur-sm h-full rounded-2xl">
-            <CardHeader className="pb-3 pt-5 px-6">
-              <CardTitle className="flex items-center gap-2.5 text-sm font-display font-semibold tracking-tight">
-                <div className="h-7 w-7 rounded-lg bg-risk-watch/10 flex items-center justify-center">
-                  <TrendingDown className="h-3.5 w-3.5 text-risk-watch" />
-                </div>
-                Risk Posture Trend
-              </CardTitle>
+          <Card className="border-border/40 glass-card h-full rounded-2xl">
+            <CardHeader className="pb-3 pt-6 px-6">
+              <SectionHeader icon={TrendingDown} title="Risk Posture Trend" iconBg="bg-risk-watch/10" iconColor="text-risk-watch" />
             </CardHeader>
             <CardContent className="px-4">
               <ResponsiveContainer width="100%" height={200}>
                 <AreaChart data={riskTrendData}>
                   <defs>
                     <linearGradient id="scoreGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(185, 85%, 50%)" stopOpacity={0.25} />
+                      <stop offset="5%" stopColor="hsl(185, 85%, 50%)" stopOpacity={0.3} />
                       <stop offset="95%" stopColor="hsl(185, 85%, 50%)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(215, 15%, 50%)" }} axisLine={false} tickLine={false} />
-                  <YAxis domain={[40, 80]} tick={{ fontSize: 10, fill: "hsl(215, 15%, 50%)" }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ background: "hsl(225, 22%, 8%)", border: "1px solid hsl(225, 15%, 14%)", borderRadius: "12px", fontSize: "11px", fontFamily: "'JetBrains Mono', monospace" }} />
+                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(215, 15%, 48%)" }} axisLine={false} tickLine={false} />
+                  <YAxis domain={[40, 80]} tick={{ fontSize: 10, fill: "hsl(215, 15%, 48%)" }} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={{ background: "hsl(228, 22%, 7%)", border: "1px solid hsl(228, 14%, 16%)", borderRadius: "12px", fontSize: "11px", fontFamily: "'JetBrains Mono', monospace", boxShadow: "0 8px 32px -8px rgba(0,0,0,0.5)" }} />
                   <Area type="monotone" dataKey="score" stroke="hsl(185, 85%, 50%)" fill="url(#scoreGrad)" strokeWidth={2} />
                 </AreaChart>
               </ResponsiveContainer>
@@ -173,24 +172,19 @@ export default function Dashboard() {
 
       {/* Regulatory Exposure */}
       <StaggerItem>
-        <Card className="border-border/60 bg-card/80 backdrop-blur-sm rounded-2xl">
-          <CardHeader className="pb-3 pt-5 px-6">
-            <CardTitle className="flex items-center gap-2.5 text-sm font-display font-semibold tracking-tight">
-              <div className="h-7 w-7 rounded-lg bg-rbi/10 flex items-center justify-center">
-                <Shield className="h-3.5 w-3.5 text-rbi" />
-              </div>
-              Regulatory Exposure Meter
-            </CardTitle>
+        <Card className="border-border/40 glass-card rounded-2xl">
+          <CardHeader className="pb-3 pt-6 px-6">
+            <SectionHeader icon={Shield} title="Regulatory Exposure Meter" iconBg="bg-rbi/10" iconColor="text-rbi" />
           </CardHeader>
           <CardContent className="px-6 pb-6">
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {complianceData.slice(0, 4).map((item) => (
-                <div key={item.regulation} className="space-y-3 p-4 rounded-xl bg-secondary/30 border border-border/40">
+                <div key={item.regulation} className="space-y-3 p-5 rounded-2xl bg-secondary/20 border border-border/30 hover:border-border/50 transition-all group">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground truncate mr-2 font-display">{item.regulation.split(" ").slice(0, 3).join(" ")}</span>
-                    <span className="font-mono text-sm font-bold text-foreground">{item.score}%</span>
+                    <span className="text-xs text-muted-foreground truncate mr-2 font-display font-medium">{item.regulation.split(" ").slice(0, 3).join(" ")}</span>
+                    <span className="font-mono text-base font-extrabold text-foreground">{item.score}%</span>
                   </div>
-                  <div className="h-2 rounded-full bg-secondary overflow-hidden">
+                  <div className="h-2 rounded-full bg-secondary/60 overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-1000"
                       style={{
@@ -199,7 +193,7 @@ export default function Dashboard() {
                       }}
                     />
                   </div>
-                  <p className="text-[10px] text-muted-foreground leading-relaxed">{item.gaps[0]}</p>
+                  <p className="text-[10px] text-muted-foreground leading-relaxed font-body">{item.gaps[0]}</p>
                 </div>
               ))}
             </div>
@@ -207,17 +201,12 @@ export default function Dashboard() {
         </Card>
       </StaggerItem>
 
-      {/* Heatmap + Distribution side by side */}
+      {/* Heatmap + Distribution */}
       <StaggerContainer className="grid gap-5 lg:grid-cols-2">
         <StaggerItem>
-          <Card className="border-border/60 bg-card/80 backdrop-blur-sm rounded-2xl">
-            <CardHeader className="pb-3 pt-5 px-6">
-              <CardTitle className="flex items-center gap-2.5 text-sm font-display font-semibold tracking-tight">
-                <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Grid3X3 className="h-3.5 w-3.5 text-primary" />
-                </div>
-                Vendor × Dimension Heatmap
-              </CardTitle>
+          <Card className="border-border/40 glass-card rounded-2xl">
+            <CardHeader className="pb-3 pt-6 px-6">
+              <SectionHeader icon={Grid3X3} title="Vendor × Dimension Heatmap" />
             </CardHeader>
             <CardContent className="px-4 pb-4">
               <RiskHeatmap />
@@ -226,21 +215,16 @@ export default function Dashboard() {
         </StaggerItem>
 
         <StaggerItem>
-          <Card className="border-border/60 bg-card/80 backdrop-blur-sm rounded-2xl">
-            <CardHeader className="pb-3 pt-5 px-6">
-              <CardTitle className="flex items-center gap-2.5 text-sm font-display font-semibold tracking-tight">
-                <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Layers className="h-3.5 w-3.5 text-primary" />
-                </div>
-                Vendor Distribution
-              </CardTitle>
+          <Card className="border-border/40 glass-card rounded-2xl">
+            <CardHeader className="pb-3 pt-6 px-6">
+              <SectionHeader icon={Layers} title="Vendor Distribution" />
             </CardHeader>
             <CardContent className="px-4 pb-4">
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={riskTrendData} barCategoryGap="20%">
-                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(215, 15%, 50%)" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: "hsl(215, 15%, 50%)" }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ background: "hsl(225, 22%, 8%)", border: "1px solid hsl(225, 15%, 14%)", borderRadius: "12px", fontSize: "11px", fontFamily: "'JetBrains Mono', monospace" }} />
+                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(215, 15%, 48%)" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: "hsl(215, 15%, 48%)" }} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={{ background: "hsl(228, 22%, 7%)", border: "1px solid hsl(228, 14%, 16%)", borderRadius: "12px", fontSize: "11px", fontFamily: "'JetBrains Mono', monospace" }} />
                   <Bar dataKey="critical" stackId="a" fill="hsl(0, 72%, 51%)" radius={[0, 0, 0, 0]} />
                   <Bar dataKey="high" stackId="a" fill="hsl(0, 72%, 51%)" fillOpacity={0.5} />
                   <Bar dataKey="watch" stackId="a" fill="hsl(38, 92%, 50%)" radius={[4, 4, 0, 0]} />
@@ -254,14 +238,9 @@ export default function Dashboard() {
       {/* Treemap + Alert Timeline */}
       <StaggerContainer className="grid gap-5 lg:grid-cols-2">
         <StaggerItem>
-          <Card className="border-border/60 bg-card/80 backdrop-blur-sm rounded-2xl">
-            <CardHeader className="pb-3 pt-5 px-6">
-              <CardTitle className="flex items-center gap-2.5 text-sm font-display font-semibold tracking-tight">
-                <div className="h-7 w-7 rounded-lg bg-risk-watch/10 flex items-center justify-center">
-                  <Building2 className="h-3.5 w-3.5 text-risk-watch" />
-                </div>
-                Concentration Risk Treemap
-              </CardTitle>
+          <Card className="border-border/40 glass-card rounded-2xl">
+            <CardHeader className="pb-3 pt-6 px-6">
+              <SectionHeader icon={Building2} title="Concentration Risk Treemap" iconBg="bg-risk-watch/10" iconColor="text-risk-watch" />
             </CardHeader>
             <CardContent className="px-4 pb-4">
               <ConcentrationTreemap />
@@ -270,14 +249,9 @@ export default function Dashboard() {
         </StaggerItem>
 
         <StaggerItem>
-          <Card className="border-border/60 bg-card/80 backdrop-blur-sm rounded-2xl">
-            <CardHeader className="pb-3 pt-5 px-6">
-              <CardTitle className="flex items-center gap-2.5 text-sm font-display font-semibold tracking-tight">
-                <div className="h-7 w-7 rounded-lg bg-risk-high/10 flex items-center justify-center">
-                  <Activity className="h-3.5 w-3.5 text-risk-high" />
-                </div>
-                Alert History Timeline
-              </CardTitle>
+          <Card className="border-border/40 glass-card rounded-2xl">
+            <CardHeader className="pb-3 pt-6 px-6">
+              <SectionHeader icon={Activity} title="Alert History Timeline" iconBg="bg-risk-high/10" iconColor="text-risk-high" />
             </CardHeader>
             <CardContent className="px-4 pb-4">
               <AlertTimeline />
