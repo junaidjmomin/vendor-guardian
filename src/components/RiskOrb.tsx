@@ -1,6 +1,8 @@
-import { useRef, useMemo } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
 import { Sphere, MeshDistortMaterial, Float, Stars } from "@react-three/drei";
+import { useRef, useMemo } from "react";
+import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 interface RiskOrbInnerProps {
@@ -94,6 +96,18 @@ function ParticleRing({ score }: RiskOrbInnerProps) {
   );
 }
 
+function OrbFallback({ score }: { score: number }) {
+  const color = score <= 49 ? "text-risk-high" : score <= 74 ? "text-risk-watch" : "text-primary";
+  return (
+    <div className="flex items-center justify-center h-full">
+      <div className="text-center">
+        <span className={`font-mono text-3xl font-bold ${color}`}>{score}</span>
+        <p className="text-[10px] text-muted-foreground font-mono tracking-widest mt-0.5">RISK SCORE</p>
+      </div>
+    </div>
+  );
+}
+
 interface RiskOrbProps {
   score: number;
   className?: string;
@@ -101,15 +115,17 @@ interface RiskOrbProps {
 
 export function RiskOrb({ score, className }: RiskOrbProps) {
   return (
-    <div className={`relative ${className}`} style={{ height: 220 }}>
-      <Canvas camera={{ position: [0, 0, 4], fov: 45 }} gl={{ alpha: true, antialias: true }}>
-        <ambientLight intensity={0.3} />
-        <pointLight position={[5, 5, 5]} intensity={1} color="#22d3ee" />
-        <pointLight position={[-5, -3, -5]} intensity={0.5} color="#a855f7" />
-        <Stars radius={10} depth={30} count={300} factor={2} saturation={0} fade speed={1} />
-        <RiskSphere score={score} />
-        <ParticleRing score={score} />
-      </Canvas>
+    <div className={`relative ${className}`} style={{ height: 220, width: "100%" }}>
+      <Suspense fallback={<OrbFallback score={score} />}>
+        <Canvas camera={{ position: [0, 0, 4], fov: 45 }} gl={{ alpha: true, antialias: true }}>
+          <ambientLight intensity={0.3} />
+          <pointLight position={[5, 5, 5]} intensity={1} color="#22d3ee" />
+          <pointLight position={[-5, -3, -5]} intensity={0.5} color="#a855f7" />
+          <Stars radius={10} depth={30} count={300} factor={2} saturation={0} fade speed={1} />
+          <RiskSphere score={score} />
+          <ParticleRing score={score} />
+        </Canvas>
+      </Suspense>
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="text-center">
           <span className="font-mono text-3xl font-bold text-foreground drop-shadow-lg">{score}</span>
