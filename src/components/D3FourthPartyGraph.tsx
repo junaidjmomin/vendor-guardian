@@ -9,7 +9,9 @@ interface GraphNode extends d3.SimulationNodeDatum {
   group: number;
 }
 
-interface GraphLink extends d3.SimulationLinkDatum<GraphNode> {
+interface GraphLink {
+  source: string;
+  target: string;
   type: "direct" | "indirect";
   strength: number;
 }
