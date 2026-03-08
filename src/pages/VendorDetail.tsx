@@ -1,10 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, AlertTriangle, Calendar, Shield, FileText } from "lucide-react";
+import { ArrowLeft, AlertTriangle, Calendar, Shield, FileText, Share2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { vendors, alerts, workflowItems, dimensionLabels } from "@/data/mockData";
 import { RiskBadge } from "@/components/RiskBadge";
 import { ScoreGauge } from "@/components/ScoreGauge";
 import { CertInClock } from "@/components/CertInClock";
+import { FourthPartyGraph } from "@/components/D3FourthPartyGraph";
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, PolarRadiusAxis } from "recharts";
 
 export default function VendorDetail() {
@@ -101,6 +102,18 @@ export default function VendorDetail() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Fourth-Party Dependency Graph */}
+      <Card className="border-border bg-card">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
+            <Share2 className="h-4 w-4 text-primary" /> FOURTH-PARTY DEPENDENCY MAP
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FourthPartyGraph vendorName={vendor.name} />
+        </CardContent>
+      </Card>
 
       {/* Triggers */}
       {vendor.triggers.length > 0 && (
