@@ -1,4 +1,4 @@
-import { useRef, useMemo } from "react";
+import { Suspense, useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Text, Line, Float, Stars } from "@react-three/drei";
 import * as THREE from "three";
@@ -51,12 +51,10 @@ function NetworkNode({ node }: { node: NodeData }) {
 
   return (
     <group position={node.position}>
-      {/* Glow sphere */}
       <mesh ref={glowRef}>
         <sphereGeometry args={[0.35, 32, 32]} />
         <meshBasicMaterial color={color} transparent opacity={0.15} />
       </mesh>
-      {/* Core sphere */}
       <mesh ref={meshRef}>
         <sphereGeometry args={[0.15, 32, 32]} />
         <meshStandardMaterial
@@ -67,17 +65,6 @@ function NetworkNode({ node }: { node: NodeData }) {
           roughness={0.3}
         />
       </mesh>
-      {/* Label */}
-      <Text
-        position={[0, -0.35, 0]}
-        fontSize={0.1}
-        color="hsl(215, 15%, 55%)"
-        anchorX="center"
-        anchorY="top"
-        font="/fonts/inter.woff"
-      >
-        {node.bank}
-      </Text>
     </group>
   );
 }
@@ -151,32 +138,42 @@ function CentralLedger() {
   );
 }
 
+function NetworkFallback() {
+  return (
+    <div className="flex items-center justify-center h-full">
+      <p className="text-xs text-muted-foreground font-mono">Loading 3D Network...</p>
+    </div>
+  );
+}
+
 interface ConsortiumNetworkVizProps {
   className?: string;
 }
 
 export function ConsortiumNetworkViz({ className }: ConsortiumNetworkVizProps) {
   return (
-    <div className={`relative ${className}`} style={{ height: 400 }}>
-      <Canvas camera={{ position: [0, 0, 5], fov: 50 }} gl={{ alpha: true, antialias: true }}>
-        <ambientLight intensity={0.2} />
-        <pointLight position={[5, 5, 5]} intensity={0.8} color="#22d3ee" />
-        <pointLight position={[-5, -3, -5]} intensity={0.3} color="#a855f7" />
-        <Stars radius={15} depth={40} count={200} factor={2} saturation={0} fade speed={0.5} />
+    <div className={`relative ${className}`} style={{ height: 400, width: "100%" }}>
+      <Suspense fallback={<NetworkFallback />}>
+        <Canvas camera={{ position: [0, 0, 5], fov: 50 }} gl={{ alpha: true, antialias: true }}>
+          <ambientLight intensity={0.2} />
+          <pointLight position={[5, 5, 5]} intensity={0.8} color="#22d3ee" />
+          <pointLight position={[-5, -3, -5]} intensity={0.3} color="#a855f7" />
+          <Stars radius={15} depth={40} count={200} factor={2} saturation={0} fade speed={0.5} />
 
-        <CentralLedger />
+          <CentralLedger />
 
-        {nodeData.map((node) => (
-          <NetworkNode key={node.id} node={node} />
-        ))}
+          {nodeData.map((node) => (
+            <NetworkNode key={node.id} node={node} />
+          ))}
 
-        {connections.map(([i, j], idx) => (
-          <group key={`edge-${idx}`}>
-            <NetworkEdge from={nodeData[i].position} to={nodeData[j].position} index={idx} />
-            {idx < 5 && <DataPulse from={nodeData[i].position} to={nodeData[j].position} index={idx} />}
-          </group>
-        ))}
-      </Canvas>
+          {connections.map(([i, j], idx) => (
+            <group key={`edge-${idx}`}>
+              <NetworkEdge from={nodeData[i].position} to={nodeData[j].position} index={idx} />
+              {idx < 5 && <DataPulse from={nodeData[i].position} to={nodeData[j].position} index={idx} />}
+            </group>
+          ))}
+        </Canvas>
+      </Suspense>
       <div className="absolute top-3 left-3 rounded border border-border bg-card/80 backdrop-blur-sm px-2 py-1">
         <p className="text-[9px] font-mono text-primary tracking-widest">HYPERLEDGER FABRIC</p>
         <p className="text-[8px] text-muted-foreground">Permissioned DLT Network</p>
