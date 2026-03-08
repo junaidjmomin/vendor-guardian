@@ -14,10 +14,11 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        display: ["Space Grotesk", "Inter", "sans-serif"],
-        heading: ["Outfit", "Inter", "sans-serif"],
+        sans: ["Satoshi", "system-ui", "sans-serif"],
+        display: ["Cabinet Grotesk", "Satoshi", "sans-serif"],
+        heading: ["Cabinet Grotesk", "Satoshi", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
+        body: ["General Sans", "Satoshi", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
