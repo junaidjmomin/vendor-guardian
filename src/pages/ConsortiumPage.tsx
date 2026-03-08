@@ -1,5 +1,6 @@
 import { Network, Lock, Shield, Eye, ArrowRight, Radio } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ConsortiumNetworkViz } from "@/components/ConsortiumNetworkViz";
 
 const consortiumNodes = [
   { id: "n1", bank: "Bank Alpha", status: "online", lastSignal: "2 min ago", vendorsMonitored: 342 },
@@ -43,6 +44,18 @@ export default function ConsortiumPage() {
           </Card>
         ))}
       </div>
+
+      {/* 3D Network Topology */}
+      <Card className="border-border bg-card overflow-hidden">
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2 text-sm font-mono tracking-wider">
+            <Network className="h-4 w-4 text-primary" /> 3D NETWORK TOPOLOGY
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <ConsortiumNetworkViz />
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Nodes */}
